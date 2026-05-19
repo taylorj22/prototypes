@@ -2822,6 +2822,10 @@
     showProfitHint = false;
     document.body.classList.remove('on-mobile');
     mCloseSheets();
+    const btn = document.getElementById('saveBtn');
+    const cancel = document.getElementById('cancelBtn');
+    if (btn) btn.classList.remove('loading');
+    if (cancel) { cancel.disabled = false; cancel.style.opacity = ''; }
     document.getElementById('presendOverlay').classList.remove('active');
     document.getElementById('sendDrawer').classList.remove('open');
     document.getElementById('simOverlay').classList.remove('active');
