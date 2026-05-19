@@ -1180,6 +1180,209 @@
     body.on-cover .zoom-bar,
     body.on-cover .right-rail { display: none !important; }
 
+    body.on-mobile .topbar,
+    body.on-mobile .editor,
+    body.on-mobile .overlay,
+    body.on-mobile .presend-overlay,
+    body.on-mobile .sim-overlay,
+    body.on-mobile .send-drawer,
+    body.on-mobile .toast { display: none !important; }
+    body.on-mobile .phone-wrap { display: flex !important; }
+
+    /* =============================================
+       MOBILE PHONE FRAME
+    ============================================= */
+    .phone-wrap {
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 28px 0 40px;
+      min-height: calc(100vh - 40px);
+      background: var(--bg-secondary);
+    }
+    .phone-frame {
+      width: 390px;
+      height: 780px;
+      background: var(--bg-default);
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 0 10px #1a1a1a, 0 24px 64px rgba(0,0,0,0.28);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    /* Mobile top bar */
+    .m-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px 12px;
+      background: var(--bg-default);
+      border-bottom: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+    .m-back {
+      display: flex; align-items: center; gap: 3px;
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: var(--small); font-weight: 500;
+      color: var(--text-link); padding: 0;
+    }
+    .m-back svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
+    .m-topbar-actions { display: flex; align-items: center; gap: 8px; }
+    .m-icon-btn {
+      width: 36px; height: 36px;
+      background: none; border: 1px solid var(--border-default);
+      border-radius: var(--radius-circle); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-default);
+    }
+    .m-icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.75px; stroke-linecap: round; stroke-linejoin: round; }
+    .m-send-btn {
+      height: 36px; padding: 0 20px;
+      background: var(--bg-contrast); border: none; color: #fff;
+      border-radius: var(--radius-circle); cursor: pointer;
+      font-family: inherit; font-size: var(--small); font-weight: 500;
+    }
+    /* Autosave bar */
+    .m-autosave {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 16px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+    .m-autosave-label {
+      display: flex; align-items: center; gap: 5px;
+      font-size: var(--smaller); color: var(--text-muted);
+    }
+    .m-autosave-label svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.75px; }
+    .m-draft-badge {
+      display: flex; align-items: center; gap: 4px;
+      font-size: var(--smaller); font-weight: 500;
+      color: var(--text-muted); background: var(--bg-quaternary);
+      border-radius: var(--radius-sm); padding: 2px 8px;
+    }
+    .m-draft-badge svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 1.75px; }
+    /* Scrollable content */
+    .m-content { flex: 1; overflow-y: auto; position: relative; }
+    .m-option-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-default);
+    }
+    .m-option-title { display: flex; align-items: center; gap: 7px; font-size: var(--body); font-weight: 500; color: var(--text-highlight); }
+    .m-option-title svg { width: 15px; height: 15px; stroke: var(--text-muted); fill: none; stroke-width: 1.75px; }
+    .m-chevron { width: 18px; height: 18px; stroke: var(--icon-muted); fill: none; stroke-width: 1.75px; stroke-linecap: round; stroke-linejoin: round; }
+    .m-section { padding: 14px 20px; border-bottom: 1px solid var(--border-default); }
+    .m-make-copy { display: flex; align-items: center; gap: 7px; font-size: var(--small); font-weight: 500; color: var(--text-link); }
+    .m-make-copy svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.75px; }
+    .m-field-label { font-size: var(--smaller); font-weight: 500; color: var(--text-muted); margin-bottom: 7px; }
+    .m-textarea {
+      width: 100%; min-height: 68px; resize: none;
+      border: 1px solid var(--border-default); border-radius: var(--radius-sm);
+      padding: 9px 11px; font-family: inherit; font-size: var(--small);
+      color: var(--text-inactive); background: var(--bg-default); outline: none;
+    }
+    .m-items-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .m-items-title { font-size: var(--small); font-weight: 500; color: var(--text-default); }
+    .m-edit-opt-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--bg-secondary); border: none; border-radius: var(--radius-circle);
+      padding: 5px 12px; font-family: inherit; font-size: var(--smaller); font-weight: 500;
+      color: var(--text-muted); cursor: pointer;
+    }
+    .m-edit-opt-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.75px; }
+    .m-line-item { padding: 10px 0; border-bottom: 1px solid var(--border-default); }
+    .m-line-item:last-child { border-bottom: none; }
+    .m-line-item-name { font-size: var(--small); font-weight: 500; color: var(--text-default); }
+    .m-line-item-sub { font-size: var(--smaller); color: var(--text-muted); margin-top: 1px; }
+    /* Right floating toolbar */
+    .m-fab {
+      position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column;
+      background: var(--bg-default);
+      border: 1px solid var(--border-default);
+      border-right: none;
+      border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+      overflow: hidden;
+      box-shadow: -2px 2px 10px rgba(0,0,0,0.07);
+      z-index: 2;
+    }
+    .m-fab-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 10px 11px; cursor: pointer;
+      border-bottom: 1px solid var(--border-default);
+    }
+    .m-fab-item:last-child { border-bottom: none; }
+    .m-fab-item svg { width: 18px; height: 18px; stroke: var(--icon-muted); fill: none; stroke-width: 1.75px; stroke-linecap: round; stroke-linejoin: round; }
+    .m-fab-label { font-size: 9px; color: var(--text-muted); font-weight: 500; white-space: nowrap; }
+    /* Sheet backdrop */
+    .m-backdrop {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.3);
+      z-index: 10; opacity: 0; pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+    .m-backdrop.show { opacity: 1; pointer-events: auto; }
+    /* Bottom sheet */
+    .m-sheet {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: var(--bg-default);
+      border-radius: 20px 20px 0 0;
+      z-index: 20;
+      transform: translateY(100%);
+      transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 88%;
+      overflow-y: auto;
+    }
+    .m-sheet.show { transform: translateY(0); }
+    .m-sheet-handle {
+      width: 36px; height: 4px; border-radius: 2px;
+      background: var(--border-default);
+      margin: 12px auto 4px;
+      flex-shrink: 0;
+    }
+    .m-sheet-title {
+      font-size: var(--body); font-weight: 500; color: var(--text-highlight);
+      padding: 6px 20px 14px;
+    }
+    /* Sheet action list */
+    .m-sheet-list { padding: 4px 0 20px; }
+    .m-sheet-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 24px; cursor: pointer;
+      font-size: var(--small); color: var(--text-default);
+      transition: background 100ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .m-sheet-item:active { background: var(--bg-secondary); }
+    .m-sheet-item svg { width: 18px; height: 18px; stroke: var(--icon-muted); fill: none; stroke-width: 1.75px; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .m-sheet-item--danger { color: var(--text-danger); }
+    .m-sheet-item--danger svg { stroke: var(--icon-error); }
+    .m-sheet-item--save { font-weight: 500; color: var(--text-default); }
+    .m-sheet-item--save svg { stroke: var(--icon-primary); }
+    /* Save sheet body */
+    .m-save-body { padding: 0 20px 4px; display: flex; flex-direction: column; gap: 10px; }
+    .m-sheet-actions { padding: 12px 20px 28px; display: flex; flex-direction: row; gap: 8px; }
+    /* Shingle Primary — Default size (44px, pill, --background-contrast) */
+    .m-btn-save {
+      height: 44px; width: 100%; border: none;
+      border-radius: var(--radius-circle);
+      background: var(--bg-contrast); color: var(--text-inverted-highlight, #fff);
+      font-family: inherit; font-size: var(--body); font-weight: 500;
+      cursor: pointer; transition: background 150ms ease;
+      padding: 0 var(--spacing-components-xxl, 24px);
+    }
+    .m-btn-save:hover { background: #126DD8; /* --roofr-blue-5B */ }
+    /* Shingle Secondary — Default size (44px, pill, --components-button-secondary) */
+    .m-btn-cancel {
+      height: 44px; width: 100%; border: none;
+      border-radius: var(--radius-circle);
+      background: var(--btn-2nd); color: var(--text-default);
+      font-family: inherit; font-size: var(--body); font-weight: 500;
+      cursor: pointer; transition: background 150ms ease;
+      padding: 0 var(--spacing-components-xxl, 24px);
+    }
+    .m-btn-cancel:hover { background: var(--btn-2nd-hover); }
+
     /* =============================================
        COVER SCREEN
     ============================================= */
@@ -1401,6 +1604,9 @@
     <button class="proto-tab" id="tab-profitability" onclick="showScreen('profitability')">Profitability</button>
     <button class="proto-tab" id="tab-measurement"   onclick="showScreen('measurement')">Measurement</button>
     <button class="proto-tab" id="tab-catalog"       onclick="showScreen('catalog')">Catalog toast</button>
+    <div class="proto-nav-sep"></div>
+    <button class="proto-tab" id="tab-mobile-menu" onclick="showScreen('mobile-menu')">Mobile — menu</button>
+    <button class="proto-tab" id="tab-mobile-save" onclick="showScreen('mobile-save')">Mobile — save</button>
   </div>
 </div>
 
@@ -2005,6 +2211,117 @@
   </button>
 </div>
 
+<!-- MOBILE PHONE FRAME -->
+<div class="phone-wrap" id="phoneWrap">
+  <div class="phone-frame">
+
+    <!-- Top bar -->
+    <div class="m-topbar">
+      <button class="m-back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="m-topbar-actions">
+        <button class="m-icon-btn" id="mDotBtn" onclick="mToggleDots()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <button class="m-icon-btn">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button class="m-send-btn">Send</button>
+      </div>
+    </div>
+
+    <!-- Autosave bar -->
+    <div class="m-autosave">
+      <div class="m-autosave-label">
+        <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Changes auto-saved
+      </div>
+      <div class="m-draft-badge">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Draft
+      </div>
+    </div>
+
+    <!-- Scrollable content -->
+    <div class="m-content">
+      <div class="m-option-header">
+        <div class="m-option-title">
+          Option 1
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <svg class="m-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="m-section">
+        <div class="m-make-copy">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Make a copy
+        </div>
+      </div>
+      <div class="m-section">
+        <div class="m-field-label">Summary</div>
+        <textarea class="m-textarea" placeholder="Tap to add a summary" readonly></textarea>
+      </div>
+      <div class="m-section">
+        <div class="m-items-header">
+          <div class="m-items-title">Items</div>
+          <button class="m-edit-opt-btn">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit option
+          </button>
+        </div>
+        <div class="m-line-item"><div class="m-line-item-name">IKO StormShield</div><div class="m-line-item-sub">Margin 0%</div></div>
+        <div class="m-line-item"><div class="m-line-item-name">IKO Stormtite</div><div class="m-line-item-sub">Margin 0%</div></div>
+        <div class="m-line-item"><div class="m-line-item-name">IKO Cambridge</div><div class="m-line-item-sub">Margin 0%</div></div>
+        <div class="m-line-item"><div class="m-line-item-name">IKO Dynasty</div><div class="m-line-item-sub">Margin 0%</div></div>
+        <div class="m-line-item"><div class="m-line-item-name">IKO Armourshake</div><div class="m-line-item-sub">Margin 0%</div></div>
+      </div>
+    </div>
+
+    <!-- Right floating toolbar -->
+    <div class="m-fab">
+      <div class="m-fab-item"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span class="m-fab-label">Hide</span></div>
+      <div class="m-fab-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M16.24 7.76a6 6 0 0 1 0 8.49M1.93 19.07A10 10 0 0 1 1.93 4.93M4.76 16.24a6 6 0 0 1 0-8.49"/></svg><span class="m-fab-label">Settings</span></div>
+      <div class="m-fab-item"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8l4-2v10l-4-2"/></svg><span class="m-fab-label">Suppliers</span></div>
+      <div class="m-fab-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="m-fab-label">Measure</span></div>
+      <div class="m-fab-item"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg><span class="m-fab-label">Menu</span></div>
+    </div>
+
+    <!-- Backdrop -->
+    <div class="m-backdrop" id="mBackdrop" onclick="mCloseSheets()"></div>
+
+    <!-- Bottom sheet: (···) menu -->
+    <div class="m-sheet" id="mDotsSheet">
+      <div class="m-sheet-handle"></div>
+      <div class="m-sheet-list">
+        <div class="m-sheet-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>View job</div>
+        <div class="m-sheet-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Edit customer</div>
+        <div class="m-sheet-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Replace customer</div>
+        <div class="m-sheet-item"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Add cosigner</div>
+        <div class="m-sheet-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>View measurement</div>
+        <div class="m-sheet-item" onclick="mOpenSaveSheet()"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Save as Template</div>
+        <div class="m-sheet-item"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Rename proposal</div>
+        <div class="m-sheet-item m-sheet-item--danger"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>Delete proposal</div>
+      </div>
+    </div>
+
+    <!-- Bottom sheet: save as template -->
+    <div class="m-sheet" id="mSaveSheet">
+      <div class="m-sheet-handle"></div>
+      <div class="m-sheet-title">Save as Template</div>
+      <div class="m-save-body" id="mSaveBody">
+        <!-- Built by JS -->
+      </div>
+      <div class="m-sheet-actions">
+        <button class="m-btn-cancel" onclick="mCloseSheets()">Cancel</button>
+        <button class="m-btn-save" onclick="mHandleSave()">Save template</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- DEMO CONTROLS -->
 <div class="demo-wrap">
   <div class="demo-panel" id="demoPanel">
@@ -2422,10 +2739,89 @@
     if (tab) tab.classList.add('active');
   }
 
+  // ── Mobile ──────────────────────────────────────────
+  let mSelectedOpt = 'update';
+
+  function mToggleDots() {
+    const sheet = document.getElementById('mDotsSheet');
+    const backdrop = document.getElementById('mBackdrop');
+    const isOpen = sheet.classList.contains('show');
+    sheet.classList.toggle('show', !isOpen);
+    backdrop.classList.toggle('show', !isOpen);
+  }
+
+  function mOpenSaveSheet() {
+    document.getElementById('mDotsSheet').classList.remove('show');
+    mBuildSaveSheet();
+    document.getElementById('mSaveSheet').classList.add('show');
+    document.getElementById('mBackdrop').classList.add('show');
+  }
+
+  function mCloseSheets() {
+    document.getElementById('mDotsSheet').classList.remove('show');
+    document.getElementById('mSaveSheet').classList.remove('show');
+    document.getElementById('mBackdrop').classList.remove('show');
+  }
+
+  function mBuildSaveSheet() {
+    const body = document.getElementById('mSaveBody');
+    const dual = role === 'owner' && origin === 'template';
+    mSelectedOpt = dual ? 'update' : 'new';
+    if (dual) {
+      body.innerHTML = `
+        <div class="opt-card sel" id="mCardA" onclick="mPickOpt('update')">
+          <div class="opt-top">
+            <div class="opt-radio"><div class="opt-dot"></div></div>
+            <span class="opt-label">Update "Asphalt Shingle Standard"</span>
+          </div>
+          <div class="opt-desc">Overwrites the existing template with this proposal's current content.</div>
+          <div class="opt-expand">
+            <div class="warn">
+              <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span class="warn-text">This overwrites the template. Proposals already created from it won't be changed.</span>
+            </div>
+          </div>
+        </div>
+        <div class="opt-card" id="mCardB" onclick="mPickOpt('new')">
+          <div class="opt-top">
+            <div class="opt-radio"><div class="opt-dot"></div></div>
+            <span class="opt-label">Save as new template</span>
+          </div>
+          <div class="opt-desc">Create a brand-new template without changing the original.</div>
+          <div class="opt-expand">
+            <div class="field">
+              <label class="field-label">Template name</label>
+              <input class="field-input" type="text" id="mNameInput" placeholder="e.g. Asphalt Shingle — Spring 2026" />
+            </div>
+          </div>
+        </div>`;
+    } else {
+      body.innerHTML = `
+        <div class="field">
+          <label class="field-label">Template name</label>
+          <input class="field-input" type="text" id="mNameInput" placeholder="e.g. Asphalt Shingle Standard" />
+        </div>`;
+      setTimeout(() => document.getElementById('mNameInput')?.focus(), 220);
+    }
+  }
+
+  function mPickOpt(opt) {
+    mSelectedOpt = opt;
+    document.getElementById('mCardA')?.classList.toggle('sel', opt === 'update');
+    document.getElementById('mCardB')?.classList.toggle('sel', opt === 'new');
+  }
+
+  function mHandleSave() {
+    mCloseSheets();
+  }
+  // ────────────────────────────────────────────────────
+
   function resetEditor() {
     closeModal();
     closeMore();
     showProfitHint = false;
+    document.body.classList.remove('on-mobile');
+    mCloseSheets();
     document.getElementById('presendOverlay').classList.remove('active');
     document.getElementById('sendDrawer').classList.remove('open');
     document.getElementById('simOverlay').classList.remove('active');
@@ -2535,6 +2931,26 @@
         applyScenario();
         // Show error toast directly — simulates a failed save
         showErrorToast('Save failed', 'Please try again.');
+      } else if (name === 'mobile-menu') {
+        document.getElementById('roleSelect').value = 'owner';
+        document.getElementById('originSelect').value = 'template';
+        document.getElementById('templateExistsSelect').value = 'true';
+        document.getElementById('entrySelect').value = 'menu';
+        applyScenario();
+        document.body.classList.add('on-mobile');
+        setTimeout(() => {
+          document.getElementById('mDotsSheet').classList.add('show');
+          document.getElementById('mBackdrop').classList.add('show');
+        }, 60);
+      } else if (name === 'mobile-save') {
+        document.getElementById('entrySelect').value = 'menu';
+        applyScenario();
+        document.body.classList.add('on-mobile');
+        setTimeout(() => {
+          mBuildSaveSheet();
+          document.getElementById('mSaveSheet').classList.add('show');
+          document.getElementById('mBackdrop').classList.add('show');
+        }, 60);
       }
     }
   }
