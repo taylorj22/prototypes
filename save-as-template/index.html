@@ -2452,7 +2452,7 @@
     { id: 'about',      label: 'About us',             typeLabel: 'Text' },
     { id: 'inspection', label: 'Inspection photos',    typeLabel: 'Photos' },
     { id: 'estimate',   label: 'Estimate',             typeLabel: 'Estimate' },
-    { id: 'ba',         label: 'Before and Afters',    typeLabel: 'Photos' },
+    { id: 'ba',         label: 'Before and afters',    typeLabel: 'Photos' },
     { id: 'terms',      label: 'Terms and conditions', typeLabel: 'Text' },
     { id: 'brochure',   label: 'Product Brochure',     typeLabel: 'PDF' },
   ];
@@ -2622,13 +2622,6 @@
           <span class="modal-hint-text">Proposal profitability settings won't be saved to the template. They can be adjusted at the template level.</span>
         </div>`;
     }
-    if (hasMeasurement) {
-      html += `
-        <div class="modal-hint modal-hint--warning">
-          <svg class="modal-hint-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span class="modal-hint-text">The measurement report section won't be included in the template. You can add one when creating a proposal from this template.</span>
-        </div>`;
-    }
     return html;
   }
 
@@ -2689,7 +2682,22 @@
         </div>`;
     }).join('');
 
-    body.innerHTML = `<div class="sections-list">${sectionsHTML}</div>`;
+    const measurementRow = hasMeasurement ? `
+      <div class="sect-group sect-dimmed" id="sg-measurement">
+        <div class="sect-pick">
+          <div class="sect-pick-check"></div>
+          <span class="sect-pick-label">Measurement section</span>
+          <span class="sect-type-tag">Measurement PDF</span>
+        </div>
+      </div>` : '';
+
+    const measurementBanner = hasMeasurement ? `
+      <div class="modal-hint modal-hint--warning" style="margin-bottom: 8px;">
+        <svg class="modal-hint-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span class="modal-hint-text">The measurement report section won't be included in the template. You can add one when creating a proposal from this template.</span>
+      </div>` : '';
+
+    body.innerHTML = `${measurementBanner}<div class="sections-list">${sectionsHTML}${measurementRow}</div>`;
 
     const ctaLabel = (selectedOpt === 'update' && origin === 'template') ? 'Replace template' : 'Save template';
     document.getElementById('modalFooter').innerHTML = `
@@ -3011,7 +3019,22 @@
         </div>`;
     }).join('');
 
-    document.getElementById('mSaveBody').innerHTML = `<div class="sections-list">${sectionsHTML}</div>`;
+    const measurementRow = hasMeasurement ? `
+      <div class="sect-group sect-dimmed" id="msg-measurement">
+        <div class="sect-pick">
+          <div class="sect-pick-check"></div>
+          <span class="sect-pick-label">Measurement section</span>
+          <span class="sect-type-tag">Measurement PDF</span>
+        </div>
+      </div>` : '';
+
+    const measurementBanner = hasMeasurement ? `
+      <div class="modal-hint modal-hint--warning" style="margin-bottom: 8px;">
+        <svg class="modal-hint-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span class="modal-hint-text">The measurement report section won't be included in the template. You can add one when creating a proposal from this template.</span>
+      </div>` : '';
+
+    document.getElementById('mSaveBody').innerHTML = `${measurementBanner}<div class="sections-list">${sectionsHTML}${measurementRow}</div>`;
 
     const ctaLabel = (mSelectedOpt === 'update' && origin === 'template') ? 'Replace template' : 'Save template';
     document.getElementById('mSheetActions').innerHTML = `
