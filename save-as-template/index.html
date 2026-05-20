@@ -2691,7 +2691,7 @@
 
     body.innerHTML = `<div class="sections-list">${sectionsHTML}</div>`;
 
-    const ctaLabel = selectedOpt === 'update' ? 'Replace template' : 'Save template';
+    const ctaLabel = (selectedOpt === 'update' && origin === 'template') ? 'Replace template' : 'Save template';
     document.getElementById('modalFooter').innerHTML = `
       <button class="btn-back" id="cancelBtn" onclick="backToModal()">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -2720,7 +2720,7 @@
   }
 
   function confirmSave() {
-    if (selectedOpt === 'new') {
+    if (selectedOpt === 'new' || origin !== 'template') {
       const name = document.getElementById('nameInput')?.value?.trim() || 'New template';
       startSaving(() => {
         const wasSending = fromPresend;
@@ -3013,7 +3013,7 @@
 
     document.getElementById('mSaveBody').innerHTML = `<div class="sections-list">${sectionsHTML}</div>`;
 
-    const ctaLabel = mSelectedOpt === 'update' ? 'Replace template' : 'Save template';
+    const ctaLabel = (mSelectedOpt === 'update' && origin === 'template') ? 'Replace template' : 'Save template';
     document.getElementById('mSheetActions').innerHTML = `
       <button class="m-btn-cancel" onclick="mBackToSave()">Back</button>
       <button class="m-btn-save" onclick="mConfirmSave()">${ctaLabel}</button>
