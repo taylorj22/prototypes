@@ -1015,6 +1015,58 @@
     .btn-tertiary:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.9); }
 
     /* =============================================
+       SECTIONS STEP
+    ============================================= */
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: none; border: none; color: var(--text-link);
+      font-family: inherit; font-size: var(--small); font-weight: 400;
+      cursor: pointer; padding: 0; line-height: 1;
+    }
+    .btn-back:hover { color: var(--text-link-hover); }
+    .btn-back svg {
+      width: 14px; height: 14px; stroke: currentColor; fill: none;
+      stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .btn-save:disabled { background: #89B9F1; cursor: not-allowed; }
+
+    .sections-list { display: flex; flex-direction: column; gap: 0; }
+    .sect-group { display: flex; flex-direction: column; }
+    .sect-group + .sect-group { border-top: 1px solid #F4F5F5; }
+    .sect-group.sect-dimmed .sect-pick { opacity: 0.4; }
+    .sect-group.sect-dimmed .sect-options { opacity: 0.25; pointer-events: none; }
+
+    .sect-pick {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: var(--radius-md);
+      cursor: pointer; user-select: none;
+      transition: background 120ms ease;
+    }
+    .sect-pick:hover { background: var(--bg-secondary); }
+    .sect-pick-check {
+      width: 16px; height: 16px; flex-shrink: 0;
+      border: 1.5px solid var(--border-default); border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      background: #fff; transition: background 120ms ease, border-color 120ms ease;
+    }
+    .sect-pick.checked .sect-pick-check { background: var(--bg-contrast); border-color: var(--bg-contrast); }
+    .sect-pick-check svg {
+      display: none; width: 10px; height: 10px; stroke: #fff;
+      stroke-width: 2.5px; fill: none; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .sect-pick.checked .sect-pick-check svg { display: block; }
+    .sect-pick-label { font-size: var(--small); font-weight: 500; color: var(--text-default); }
+    .sect-type-tag { font-size: var(--smaller); color: var(--text-inactive); margin-left: auto; white-space: nowrap; }
+
+    .sect-options { padding-left: 36px; padding-bottom: 6px; display: flex; flex-direction: column; gap: 2px; }
+    .sect-option { display: flex; align-items: center; gap: 10px; padding: 3px 10px; }
+    .sect-option--pick { cursor: pointer; user-select: none; border-radius: var(--radius-sm); transition: background 120ms ease; }
+    .sect-option--pick:hover { background: var(--bg-secondary); }
+    .sect-option-label { font-size: var(--smaller); color: var(--text-muted); }
+
+    .modal-body.scrollable { max-height: 380px; overflow-y: auto; }
+
+    /* =============================================
        TOAST
     ============================================= */
     .toast {
@@ -1360,7 +1412,7 @@
     .m-sheet-item--save { font-weight: 500; color: var(--text-default); }
     .m-sheet-item--save svg { stroke: var(--icon-primary); }
     /* Save sheet body */
-    .m-save-body { padding: 0 20px 4px; display: flex; flex-direction: column; gap: 10px; }
+    .m-save-body { padding: 0 20px 4px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 420px; }
     .m-sheet-actions { padding: 12px 20px 28px; display: flex; flex-direction: row; gap: 8px; }
     /* Shingle Primary — Default size (44px, pill, --background-contrast) */
     .m-btn-save {
@@ -2132,10 +2184,10 @@
     </div>
     <div class="modal-hr"></div>
     <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer">
+    <div class="modal-footer" id="modalFooter">
       <button class="btn-cancel" id="cancelBtn" onclick="closeModal()">Cancel</button>
       <button class="btn-save" id="saveBtn" onclick="handleSave()">
-        <span class="btn-save-label">Save template</span>
+        <span class="btn-save-label">Review sections</span>
         <span class="btn-save-loading">Saving<span class="btn-save-dots"><span></span><span></span><span></span></span></span>
       </button>
     </div>
@@ -2309,13 +2361,13 @@
     <!-- Bottom sheet: save as template -->
     <div class="m-sheet" id="mSaveSheet">
       <div class="m-sheet-handle"></div>
-      <div class="m-sheet-title">Save as Template</div>
+      <div class="m-sheet-title" id="mSaveTitle">Save as template</div>
       <div class="m-save-body" id="mSaveBody">
         <!-- Built by JS -->
       </div>
-      <div class="m-sheet-actions">
-        <button class="m-btn-cancel" onclick="mCloseSheets()">Cancel</button>
-        <button class="m-btn-save" onclick="mHandleSave()">Save template</button>
+      <div class="m-sheet-actions" id="mSheetActions">
+        <button class="m-btn-cancel" id="mCancelBtn" onclick="mCloseSheets()">Cancel</button>
+        <button class="m-btn-save" id="mSaveBtn" onclick="mHandleSave()">Review sections</button>
       </div>
     </div>
 
@@ -2394,6 +2446,23 @@
   let hasMeasurement = false;
   let catalogItems = 0;
   let showProfitHint = false;
+
+  const PROPOSAL_SECTIONS = [
+    { id: 'cover',      label: 'Cover',               typeLabel: 'Cover page' },
+    { id: 'about',      label: 'About us',             typeLabel: 'Text' },
+    { id: 'inspection', label: 'Inspection photos',    typeLabel: 'Photos' },
+    { id: 'estimate',   label: 'Estimate',             typeLabel: 'Estimate' },
+    { id: 'ba',         label: 'Before and Afters',    typeLabel: 'Photos' },
+    { id: 'terms',      label: 'Terms and conditions', typeLabel: 'Text' },
+    { id: 'brochure',   label: 'Product Brochure',     typeLabel: 'PDF' },
+  ];
+  const ESTIMATE_OPTIONS = [
+    { id: 'opt-good',   label: 'Good' },
+    { id: 'opt-better', label: 'Better' },
+    { id: 'opt-best',   label: 'Best' },
+  ];
+  let selectedNewSections = new Set(PROPOSAL_SECTIONS.map(s => s.id));
+  let selectedEstimateOptions = new Set(ESTIMATE_OPTIONS.map(o => o.id));
 
   function applyScenario() {
     role   = document.getElementById('roleSelect').value;
@@ -2505,7 +2574,7 @@
         <div class="opt-card sel" id="cardA" onclick="pickOpt('update')">
           <div class="opt-top">
             <div class="opt-radio"><div class="opt-dot"></div></div>
-            <span class="opt-label">Update "Asphalt Shingle Standard"</span>
+            <span class="opt-label">Replace "Asphalt Shingle Standard"</span>
           </div>
           <div class="opt-desc">Overwrites the existing template with this proposal's current content</div>
           <div class="opt-expand">
@@ -2586,6 +2655,78 @@
         setTimeout(() => inp?.classList.remove('err'), 2000);
         return;
       }
+    }
+    showSectionsStep();
+  }
+
+  function showSectionsStep() {
+    selectedNewSections = new Set(PROPOSAL_SECTIONS.map(s => s.id));
+    selectedEstimateOptions = new Set(ESTIMATE_OPTIONS.map(o => o.id));
+
+    document.getElementById('modalSub').textContent = 'Choose which sections to include';
+
+    const body = document.getElementById('modalBody');
+    body.classList.add('scrollable');
+
+    const CHECK = `<svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>`;
+    const sectionsHTML = PROPOSAL_SECTIONS.map(s => {
+      const isEstimate = s.id === 'estimate';
+      const optionsHTML = isEstimate ? `
+        <div class="sect-options">
+          ${ESTIMATE_OPTIONS.map(o => selectedOpt === 'new' ? `
+            <div class="sect-option sect-option--pick checked" id="so-${o.id}" onclick="toggleEstimateOption('${o.id}', this)">
+              <div class="sect-pick-check">${CHECK}</div>
+              <span class="sect-option-label">${o.label}</span>
+            </div>
+          ` : `
+            <div class="sect-option"><span class="sect-option-label">${o.label}</span></div>
+          `).join('')}
+        </div>` : '';
+
+      return `
+        <div class="sect-group" id="sg-${s.id}">
+          <div class="sect-pick checked" onclick="toggleSectionRow('${s.id}', this)">
+            <div class="sect-pick-check">${CHECK}</div>
+            <span class="sect-pick-label">${s.label}</span>
+            <span class="sect-type-tag">${s.typeLabel}</span>
+          </div>
+          ${optionsHTML}
+        </div>`;
+    }).join('');
+
+    body.innerHTML = `<div class="sections-list">${sectionsHTML}</div>`;
+
+    const ctaLabel = selectedOpt === 'update' ? 'Replace template' : 'Save template';
+    document.getElementById('modalFooter').innerHTML = `
+      <button class="btn-back" id="cancelBtn" onclick="backToModal()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <button class="btn-save" id="saveBtn" onclick="confirmSave()">
+        <span class="btn-save-label">${ctaLabel}</span>
+        <span class="btn-save-loading">Saving<span class="btn-save-dots"><span></span><span></span><span></span></span></span>
+      </button>
+    `;
+  }
+
+  function backToModal() {
+    const body = document.getElementById('modalBody');
+    body.classList.remove('scrollable');
+    document.getElementById('modalSub').textContent = '';
+    const dual = (role === 'owner') && (origin === 'template');
+    buildModal(dual);
+    document.getElementById('modalFooter').innerHTML = `
+      <button class="btn-cancel" id="cancelBtn" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="saveBtn" onclick="handleSave()">
+        <span class="btn-save-label">Review sections</span>
+        <span class="btn-save-loading">Saving<span class="btn-save-dots"><span></span><span></span><span></span></span></span>
+      </button>
+    `;
+  }
+
+  function confirmSave() {
+    if (selectedOpt === 'new') {
+      const name = document.getElementById('nameInput')?.value?.trim() || 'New template';
       startSaving(() => {
         const wasSending = fromPresend;
         fromPresend = false;
@@ -2601,10 +2742,33 @@
         fromPresend = false;
         const msg = catalogItems > 0
           ? `${catalogItems} line item${catalogItems > 1 ? 's' : ''} added to catalog`
-          : (wasSending ? 'Template updated' : 'Existing proposals are unaffected');
-        showToast('"Asphalt Shingle Standard" updated', msg, catalogItems > 0);
+          : (wasSending ? 'Template replaced' : 'Existing proposals are unaffected');
+        showToast('"Asphalt Shingle Standard" replaced', msg, catalogItems > 0);
         if (wasSending) openSendDrawer();
       });
+    }
+  }
+
+  function toggleSectionRow(id, rowEl) {
+    const group = rowEl.closest('.sect-group');
+    if (selectedNewSections.has(id)) {
+      selectedNewSections.delete(id);
+      rowEl.classList.remove('checked');
+      group.classList.add('sect-dimmed');
+    } else {
+      selectedNewSections.add(id);
+      rowEl.classList.add('checked');
+      group.classList.remove('sect-dimmed');
+    }
+  }
+
+  function toggleEstimateOption(id, el) {
+    if (selectedEstimateOptions.has(id)) {
+      selectedEstimateOptions.delete(id);
+      el.classList.remove('checked');
+    } else {
+      selectedEstimateOptions.add(id);
+      el.classList.add('checked');
     }
   }
 
@@ -2772,7 +2936,7 @@
         <div class="opt-card sel" id="mCardA" onclick="mPickOpt('update')">
           <div class="opt-top">
             <div class="opt-radio"><div class="opt-dot"></div></div>
-            <span class="opt-label">Update "Asphalt Shingle Standard"</span>
+            <span class="opt-label">Replace "Asphalt Shingle Standard"</span>
           </div>
           <div class="opt-desc">Overwrites the existing template with this proposal's current content</div>
           <div class="opt-expand">
@@ -2812,7 +2976,100 @@
   }
 
   function mHandleSave() {
+    if (mSelectedOpt === 'new') {
+      const inp = document.getElementById('mNameInput');
+      const name = inp?.value?.trim();
+      if (!name) {
+        inp?.classList.add('err');
+        inp?.focus();
+        setTimeout(() => inp?.classList.remove('err'), 2000);
+        return;
+      }
+    }
+    mShowSectionsStep();
+  }
+
+  function mShowSectionsStep() {
+    selectedNewSections = new Set(PROPOSAL_SECTIONS.map(s => s.id));
+    selectedEstimateOptions = new Set(ESTIMATE_OPTIONS.map(o => o.id));
+
+    document.getElementById('mSaveTitle').textContent = 'Choose sections';
+
+    const CHECK = `<svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>`;
+    const sectionsHTML = PROPOSAL_SECTIONS.map(s => {
+      const isEstimate = s.id === 'estimate';
+      const optionsHTML = isEstimate ? `
+        <div class="sect-options">
+          ${ESTIMATE_OPTIONS.map(o => mSelectedOpt === 'new' ? `
+            <div class="sect-option sect-option--pick checked" id="mso-${o.id}" onclick="mToggleEstOpt('${o.id}', this)">
+              <div class="sect-pick-check">${CHECK}</div>
+              <span class="sect-option-label">${o.label}</span>
+            </div>
+          ` : `
+            <div class="sect-option"><span class="sect-option-label">${o.label}</span></div>
+          `).join('')}
+        </div>` : '';
+
+      return `
+        <div class="sect-group" id="msg-${s.id}">
+          <div class="sect-pick checked" onclick="mToggleSection('${s.id}', this)">
+            <div class="sect-pick-check">${CHECK}</div>
+            <span class="sect-pick-label">${s.label}</span>
+            <span class="sect-type-tag">${s.typeLabel}</span>
+          </div>
+          ${optionsHTML}
+        </div>`;
+    }).join('');
+
+    document.getElementById('mSaveBody').innerHTML = `<div class="sections-list">${sectionsHTML}</div>`;
+
+    const ctaLabel = mSelectedOpt === 'update' ? 'Replace template' : 'Save template';
+    document.getElementById('mSheetActions').innerHTML = `
+      <button class="m-btn-cancel" onclick="mBackToSave()">Back</button>
+      <button class="m-btn-save" onclick="mConfirmSave()">${ctaLabel}</button>
+    `;
+  }
+
+  function mBackToSave() {
+    document.getElementById('mSaveTitle').textContent = 'Save as template';
+    mBuildSaveSheet();
+    document.getElementById('mSheetActions').innerHTML = `
+      <button class="m-btn-cancel" id="mCancelBtn" onclick="mCloseSheets()">Cancel</button>
+      <button class="m-btn-save" id="mSaveBtn" onclick="mHandleSave()">Review sections</button>
+    `;
+  }
+
+  function mConfirmSave() {
     mCloseSheets();
+    if (mSelectedOpt === 'new') {
+      const name = document.getElementById('mNameInput')?.value?.trim() || 'New template';
+      showToast(`"${name}" saved`, 'Ready to use on future proposals');
+    } else {
+      showToast('"Asphalt Shingle Standard" replaced', 'Existing proposals are unaffected');
+    }
+  }
+
+  function mToggleSection(id, rowEl) {
+    const group = rowEl.closest('.sect-group');
+    if (selectedNewSections.has(id)) {
+      selectedNewSections.delete(id);
+      rowEl.classList.remove('checked');
+      group.classList.add('sect-dimmed');
+    } else {
+      selectedNewSections.add(id);
+      rowEl.classList.add('checked');
+      group.classList.remove('sect-dimmed');
+    }
+  }
+
+  function mToggleEstOpt(id, el) {
+    if (selectedEstimateOptions.has(id)) {
+      selectedEstimateOptions.delete(id);
+      el.classList.remove('checked');
+    } else {
+      selectedEstimateOptions.add(id);
+      el.classList.add('checked');
+    }
   }
   // ────────────────────────────────────────────────────
 
