@@ -2673,12 +2673,7 @@
       const isEstimate = s.id === 'estimate';
       const optionsHTML = isEstimate ? `
         <div class="sect-options">
-          ${ESTIMATE_OPTIONS.map(o => selectedOpt === 'new' ? `
-            <div class="sect-option sect-option--pick checked" id="so-${o.id}" onclick="toggleEstimateOption('${o.id}', this)">
-              <div class="sect-pick-check">${CHECK}</div>
-              <span class="sect-option-label">${o.label}</span>
-            </div>
-          ` : `
+          ${ESTIMATE_OPTIONS.map(o => `
             <div class="sect-option"><span class="sect-option-label">${o.label}</span></div>
           `).join('')}
         </div>` : '';
@@ -3000,12 +2995,7 @@
       const isEstimate = s.id === 'estimate';
       const optionsHTML = isEstimate ? `
         <div class="sect-options">
-          ${ESTIMATE_OPTIONS.map(o => mSelectedOpt === 'new' ? `
-            <div class="sect-option sect-option--pick checked" id="mso-${o.id}" onclick="mToggleEstOpt('${o.id}', this)">
-              <div class="sect-pick-check">${CHECK}</div>
-              <span class="sect-option-label">${o.label}</span>
-            </div>
-          ` : `
+          ${ESTIMATE_OPTIONS.map(o => `
             <div class="sect-option"><span class="sect-option-label">${o.label}</span></div>
           `).join('')}
         </div>` : '';
