@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Perception Research — Taylor Jackson</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230B0C10'/><text x='16' y='22' font-family='sans-serif' font-size='13' font-weight='600' fill='white' text-anchor='middle'>TJ</text></svg>">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* AI research — purple accent for research context */
+    .research-accent {
+      color: var(--c-research);
+      font-weight: 500;
+    }
+    .finding-row {
+      display: flex; align-items: baseline; gap: 16px;
+      padding: 14px 0; border-bottom: 1px solid var(--c-border);
+    }
+    .finding-row:first-child { border-top: 1px solid var(--c-border); }
+    .finding-pct {
+      font-size: 28px; font-weight: 500; color: var(--c-text);
+      letter-spacing: -0.5px; min-width: 64px; flex-shrink: 0;
+    }
+    .finding-pct.highlight { color: var(--c-research); }
+    .finding-desc {
+      font-size: var(--t-body); color: var(--c-text-med); line-height: 1.5;
+    }
+    .segment-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin: 20px 0;
+    }
+    .segment-card {
+      padding: 16px 18px; background: var(--c-off-white);
+      border: 1px solid var(--c-border); border-radius: 6px;
+    }
+    .segment-name {
+      font-size: var(--t-sm); font-weight: 500; color: var(--c-text);
+      margin-bottom: 4px;
+    }
+    .segment-desc {
+      font-size: var(--t-xs); color: var(--c-text-muted); line-height: 1.45;
+    }
+    .competitor-row {
+      padding: 16px 0; border-bottom: 1px solid var(--c-border);
+    }
+    .competitor-row:first-child { border-top: 1px solid var(--c-border); }
+    .competitor-name {
+      font-size: var(--t-sm); font-weight: 500; color: var(--c-text);
+      margin-bottom: 4px;
+    }
+    .competitor-desc {
+      font-size: var(--t-sm); color: var(--c-text-muted); line-height: 1.5;
+      margin-bottom: 6px;
+    }
+    .trust-pattern {
+      display: inline-block;
+      font-size: var(--t-xs); color: var(--c-research);
+      background: var(--c-research-bg); border: 1px solid var(--c-research-bd);
+      border-radius: 4px; padding: 2px 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="cs-nav" id="cs-nav">
+    <a href="index.html" class="cs-nav-back">← Taylor Jackson</a>
+    <span class="cs-nav-label">02 / AI Perception Research</span>
+  </nav>
+
+  <!-- Header -->
+  <header class="cs-header">
+    <div class="cs-header-inner">
+      <div class="cs-header-meta">
+        <span class="badge badge-research"><span class="badge-dot"></span>Research · Phase 1 of 3</span>
+        <span class="cs-timeline">2025 – Ongoing</span>
+      </div>
+      <h1 class="cs-title">UXR: AI Perception Research</h1>
+      <div class="cs-meta-row">
+        <div class="cs-meta-item">
+          <span class="cs-meta-key">My Role</span>
+          <span class="cs-meta-val">Competitive Audit &amp; Survey Design</span>
+        </div>
+        <div class="cs-meta-item">
+          <span class="cs-meta-key">Team</span>
+          <span class="cs-meta-val">Tiffany (lead), Diana (interviews)</span>
+        </div>
+        <div class="cs-meta-item">
+          <span class="cs-meta-key">Stakeholder</span>
+          <span class="cs-meta-val">Rajiv (exec sponsor)</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="cs-body">
+
+    <!-- Context -->
+    <section class="cs-section fade-in">
+      <div class="cs-sec-label">Context</div>
+      <div class="cs-content">
+        <h3 class="cs-h3">Adding AI to Roofr was already decided</h3>
+        <p class="cs-p">By the time this research started, AI was already in motion: Growth had an AI Receptionist in beta, an AI Proposal Builder was planned, and more was coming. The question wasn't whether to build AI features — it was <em>how to release them in a way that drives adoption instead of resistance.</em></p>
+
+        <div class="cs-callout">
+          <p>This research gives every team designing and shipping AI a shared, evidence-based foundation. It's generative — we're not testing feature ideas, we're discovering real mental models. The output shapes <strong>how AI features are released, named, designed, and explained</strong> — not just which ones to build.</p>
+        </div>
+
+        <h3 class="cs-h3">Two failure modes to design around</h3>
+        <p class="cs-p">Competitive analysis surfaced a tension every competitor is navigating:</p>
+        <ul class="cs-list">
+          <li><strong>Over-transparency</strong> — labeling everything "AI-powered" triggers skepticism in contractors who associate AI with inaccuracy or gimmicks. The label can be a barrier before they've even tried the feature.</li>
+          <li><strong>Under-transparency</strong> — hiding AI use erodes trust when customers eventually discover it. In a high-stakes industry where an estimate error costs real money, contractors want to know what's generating the numbers they're signing off on.</li>
+        </ul>
+        <p class="cs-p">The research was designed to find where Roofr's customers sit — and how that varies across segments.</p>
+      </div>
+    </section>
+
+    <!-- Process -->
+    <section class="cs-section fade-in">
+      <div class="cs-sec-label">Process</div>
+      <div class="cs-content">
+        <h3 class="cs-h3">Three-phase research design</h3>
+
+        <div class="phase-track" style="margin-bottom:28px;">
+          <div class="phase-step done">Phase 1<br>Landscape &amp; Survey</div>
+          <div class="phase-step active">Phase 2<br>Interviews</div>
+          <div class="phase-step">Phase 3<br>Synthesis</div>
+        </div>
+
+        <p class="cs-p">Phase 1 combined three methods to build a foundation before going deeper:</p>
+        <ul class="cs-list">
+          <li><strong>Competitor audit</strong> — Map what AccuLynx, JobNimbus, Hover, ServiceTitan, Jobber, Housecall Pro, and XBuild are doing with AI. Identify trust patterns and messaging strategies.</li>
+          <li><strong>Industry survey</strong> — 400-customer survey with Roofr customers (active 1+ months, any plan). Segmented by AI Readiness, not just company size.</li>
+          <li><strong>Generative interview pipeline</strong> — survey opt-ins screened against AI Readiness segments for Phase 2 depth interviews.</li>
+        </ul>
+
+        <h3 class="cs-h3">AI Readiness segmentation</h3>
+        <p class="cs-p">Treating our customer base as one group would miss the critical nuance. The segmentation framework was a core design decision:</p>
+
+        <div class="segment-grid">
+          <div class="segment-card">
+            <div class="segment-name">Early Adopters</div>
+            <div class="segment-desc">Already using AI tools intentionally inside or outside their business (e.g. ChatGPT for emails).</div>
+          </div>
+          <div class="segment-card">
+            <div class="segment-name">Unaware Users</div>
+            <div class="segment-desc">Have AI features in their current tools but don't think of themselves as AI users.</div>
+          </div>
+          <div class="segment-card">
+            <div class="segment-name">AI-Curious</div>
+            <div class="segment-desc">Interested but haven't committed. May be blocked by knowledge gaps or trust concerns.</div>
+          </div>
+          <div class="segment-card">
+            <div class="segment-name">Skeptics</div>
+            <div class="segment-desc">Not using AI, not interested. The label itself may be a barrier.</div>
+          </div>
+        </div>
+
+        <h3 class="cs-h3">Competitor audit — key patterns</h3>
+
+        <div style="margin-top:4px;">
+          <div class="competitor-row">
+            <div class="competitor-name">XBuild <span style="font-size:11px;color:var(--c-text-muted);font-weight:400">Emerging / AI-native</span></div>
+            <div class="competitor-desc">AI-native estimating: describe the job in plain language, get a complete estimate and proposal in minutes. Integrates Roofr measurements as input. Most urgent competitive threat — free-to-start lowers the trial barrier.</div>
+            <span class="trust-pattern">Outcome-focus: "Close the deal before you leave the driveway"</span>
+          </div>
+          <div class="competitor-row">
+            <div class="competitor-name">ServiceTitan <span style="font-size:11px;color:var(--c-text-muted);font-weight:400">Indirect</span></div>
+            <div class="competitor-desc">Most aggressive AI in the space. "Atlas" — an agentic co-pilot across the full platform. Customers report double-digit revenue growth attributed to the AI suite.</div>
+            <span class="trust-pattern">Enterprise credibility + measurable ROI claims</span>
+          </div>
+          <div class="competitor-row">
+            <div class="competitor-name">Jobber <span style="font-size:11px;color:var(--c-text-muted);font-weight:400">Indirect</span></div>
+            <div class="competitor-desc">Jobber Voice (hands-free field commands), AI Quote Automations, Campaign Generator. Also has an AI receptionist add-on.</div>
+            <span class="trust-pattern">Removing friction from physically demanding work</span>
+          </div>
+          <div class="competitor-row">
+            <div class="competitor-name">Hover <span style="font-size:11px;color:var(--c-text-muted);font-weight:400">Direct / Measurement</span></div>
+            <div class="competitor-desc">Hover AI — measurements, design, estimating, and proposals in one end-to-end workflow. Trained on 10M+ residential properties. Instant Design: AI-generated photo-realistic home visualizations.</div>
+            <span class="trust-pattern">Visual proof — contractors can see the AI output</span>
+          </div>
+        </div>
+
+        <div class="cs-callout" style="margin-top:24px;">
+          <p><strong>Audit insight:</strong> Outcome framing outperforms technology framing — users respond to "save 4 hours" more than "powered by AI." Roofr's data depth is an unspoken credibility asset none of the audited competitors are fully leveraging.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Findings (Images) -->
+    <div class="cs-section-images fade-in">
+      <div class="cs-img-label">Phase 1 Findings</div>
+      <div class="cs-source-links" style="margin-bottom:20px;">
+        <a class="cs-source-link" href="https://www.figma.com/board/VOfehu4aTMqwCyNh48OZDx/AI-Perception-Competitor-Audit?node-id=0-1" target="_blank" rel="noopener">↗ FigJam — Competitor Audit</a>
+        <a class="cs-source-link" href="https://www.notion.so/AI-Perception-Research-x-Growth-334330ded8d080fd99badd1c197f3e92" target="_blank" rel="noopener">↗ Notion — Research Doc</a>
+        <a class="cs-source-link" href="https://www.notion.so/AI-competitor-review-335330ded8d080e8802ee26af57b2586" target="_blank" rel="noopener">↗ Notion — Competitor Review</a>
+      </div>
+
+      <iframe class="figma-embed" title="FigJam — AI Perception Competitor Audit" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fboard%2FVOfehu4aTMqwCyNh48OZDx%2FAI-Perception-Competitor-Audit%3Fnode-id%3D0-1" allowfullscreen></iframe>
+      <p class="figma-embed-caption">FigJam — AI Perception Competitor Audit · Trust patterns across AccuLynx, JobNimbus, Hover, ServiceTitan, Jobber, Housecall Pro, XBuild</p>
+    </div>
+
+    <!-- Outcomes -->
+    <section class="cs-section fade-in">
+      <div class="cs-sec-label">Outcomes</div>
+      <div class="cs-content">
+        <div class="cs-metrics" style="margin-bottom:28px;">
+          <div class="metric">
+            <div class="metric-val">84%</div>
+            <div class="metric-desc">Survey completion rate (75 of 400 target)</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val">38</div>
+            <div class="metric-desc">Interview opt-ins for Phase 2 pipeline</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val">67%</div>
+            <div class="metric-desc">Of respondents not using AI in any part of their business</div>
+          </div>
+        </div>
+
+        <h3 class="cs-h3">Key early findings</h3>
+
+        <div style="margin-top:4px;">
+          <div class="finding-row">
+            <div class="finding-pct highlight">50%</div>
+            <div class="finding-desc">Rate <em>creating estimates and proposals</em> as their most repetitive task — the same area where early AI adopters are already experimenting.</div>
+          </div>
+          <div class="finding-row">
+            <div class="finding-pct highlight">63%</div>
+            <div class="finding-desc">Cite <em>inaccurate output</em> as their top AI concern — not privacy, not job displacement. Accuracy on high-stakes estimates is the trust bar.</div>
+          </div>
+          <div class="finding-row">
+            <div class="finding-pct">38%</div>
+            <div class="finding-desc">Rate admin work as most repetitive — consistent #2 across both pain point and AI-usage questions.</div>
+          </div>
+          <div class="finding-row">
+            <div class="finding-pct">56%</div>
+            <div class="finding-desc">Of respondents are owners or founders — the decision-makers on whether to adopt and pay for AI features.</div>
+          </div>
+        </div>
+
+        <div class="cs-callout" style="margin-top:24px;">
+          <p><strong>Emerging design direction:</strong> "Reviewed by AI, confirmed by you." Human approval before anything leaves the system — nothing is sent or saved without the contractor signing off. This addresses the trust concern directly and applies platform-wide.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Strategic Reach -->
+    <section class="cs-section cs-section-reach fade-in">
+      <div class="cs-sec-label">Strategic Reach</div>
+      <div class="cs-content">
+        <div class="cs-reach-inner">
+          <h3 class="cs-h3">This research is shaping the AI product strategy</h3>
+          <p class="cs-p">The output of this research isn't a feature spec — it's an opportunity map, personas, and a risk assessment that every team designing AI features will work from. It answers the questions that can't be answered by looking at metrics: how do contractors think about AI, and what would it take for them to trust it?</p>
+
+          <p class="cs-p">The competitor audit identified XBuild as an urgent competitive threat and flagged that Roofr's data depth is a credibility asset currently being undersold. These are strategic inputs to roadmap conversations, not just UX findings.</p>
+
+          <h3 class="cs-h3">PM-level work in practice</h3>
+          <p class="cs-p">Designing the research methodology — the AI Readiness segmentation framework, the survey instrument, the recruitment targeting — required thinking about what decisions the research needed to enable, not just what questions to ask. That's a product management framing applied to a research context.</p>
+
+          <p class="cs-p">The "over-transparency vs under-transparency" framing is now a shared mental model across the product and growth teams for evaluating how to communicate AI features.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const nav = document.getElementById('cs-nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    }, { passive: true });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('revealed'); });
+    }, { threshold: 0.07, rootMargin: '-24px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

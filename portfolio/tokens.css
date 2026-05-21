@@ -1,0 +1,69 @@
+:root {
+  /* Dark (hero) */
+  --c-dark:         #0B0C10;
+  --c-dark-surface: #13141B;
+  --c-dark-border:  rgba(255,255,255,0.09);
+  --c-dark-text:    #F0F1F4;
+  --c-dark-muted:   #8B909C;
+  --c-dark-subtle:  #45495A;
+
+  /* Light */
+  --c-white:        #FFFFFF;
+  --c-off-white:    #F7F8FA;
+  --c-border:       #E4E6EA;
+  --c-text:         #0D0E12;
+  --c-text-med:     #3C4153;
+  --c-text-muted:   #6B7280;
+  --c-text-subtle:  #9EA5B0;
+
+  /* Accent */
+  --c-blue:         #1373E3;
+  --c-blue-tint:    #EAF2FD;
+
+  /* Status — Shipped */
+  --c-shipped:      #0F9A40;
+  --c-shipped-bg:   #EAF7EF;
+  --c-shipped-bd:   #A8DFC0;
+
+  /* Status — In Progress */
+  --c-progress:     #C47B00;
+  --c-progress-bg:  #FFF3D4;
+  --c-progress-bd:  #FFD066;
+
+  /* Status — Research */
+  --c-research:     #6633BB;
+  --c-research-bg:  #EEE9FA;
+  --c-research-bd:  #C3B0EE;
+
+  /* Typography */
+  --font: 'Circular Std', -apple-system, BlinkMacSystemFont, sans-serif;
+  --t-display: clamp(52px, 6.5vw, 88px);
+  --t-h1:      clamp(36px, 4vw,   52px);
+  --t-h2:      clamp(24px, 2.8vw, 36px);
+  --t-h3:      24px;
+  --t-h4:      20px;
+  --t-lg:      18px;
+  --t-body:    16px;
+  --t-sm:      13px;
+  --t-xs:      11px;
+
+  /* Spacing */
+  --s-xs:  8px;
+  --s-sm:  16px;
+  --s-md:  24px;
+  --s-lg:  40px;
+  --s-xl:  64px;
+  --s-xxl: 112px;
+
+  /* Layout */
+  --pad:      80px;
+  --max:      1200px;
+  --max-text: 680px;
+}
+
+@media (max-width: 1024px) {
+  :root { --pad: 48px; --s-xxl: 80px; }
+}
+@media (max-width: 768px) {
+  :root { --pad: 24px; --s-xxl: 60px; --s-xl: 40px; }
+}
