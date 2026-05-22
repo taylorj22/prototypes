@@ -74,7 +74,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: var(--s-xl) var(--pad) 56px;
+  padding: var(--s-xl) 0 56px;
   position: relative;
   overflow: hidden;
 }
@@ -100,7 +100,10 @@ body {
 
 .hero-content {
   position: relative; z-index: 1;
-  max-width: var(--max);
+  max-width: calc(var(--max) + var(--pad) * 2);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--pad);
 }
 
 .hero-eyebrow {
