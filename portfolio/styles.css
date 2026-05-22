@@ -287,17 +287,36 @@ body {
   border: 1px solid var(--c-border);
   border-radius: 8px;
   font-size: var(--t-sm); color: var(--c-text-muted);
+  text-decoration: none;
+}
+
+.cert-badge--earned {
+  background: var(--c-shipped-bg);
+  border-color: var(--c-shipped-bd);
 }
 
 .cert-badge-icon {
   width: 28px; height: 28px; border-radius: 6px;
   background: var(--c-blue-tint);
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
+  font-size: 14px; flex-shrink: 0;
+}
+
+.cert-badge--earned .cert-badge-icon {
+  background: var(--c-shipped);
+  color: #fff;
+  font-size: 13px; font-weight: 600;
 }
 
 .cert-badge strong {
   font-weight: 500; color: var(--c-text);
+}
+
+.cert-badge-sub {
+  display: block;
+  font-size: var(--t-xs);
+  color: var(--c-text-subtle);
+  margin-top: 2px;
 }
 
 /* ─────────────────────────────────────────────
