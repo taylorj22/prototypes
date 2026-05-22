@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Perception Survey — Results</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #F5F7FC; font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const data = {
+      totalRows: 237,
+      completedResponses: 182,
+      companySize: { "Just me": 28, "2-5": 71, "6-15": 57, "16-50": 24, "51-100": 6, "More than 100": 8 },
+      roles: { "Owner / founder": 101, "Sales rep": 24, "Office manager / admin": 25, "Project manager": 17, "Sales manager": 13, "Production manager": 8, "Other": 14 },
+      workType: { "Residential retail": 138, "Residential insurance": 90, "Commercial retail": 69, "Commercial insurance": 44, "Other": 14 },
+      timeConsumingTasks: { "Creating estimates or proposals": 95, "Administrative work": 65, "Lead generation and follow-up": 64, "Managing team members or subcontractors": 54, "Scheduling and job tracking": 53, "Managing insurance claims or supplements": 49, "Communicating with customers during a job": 36, "Invoicing and collecting payments": 34, "Other": 8 },
+      repetitiveTasks: { "Creating estimates or proposals": 87, "Administrative work": 68, "Lead generation and follow-up": 46, "Managing insurance claims or supplements": 38, "Scheduling and job tracking": 35, "Invoicing and collecting payments": 34, "Communicating with customers during a job": 22, "Managing team members or subcontractors": 28, "Other": 5 },
+      aiUsageAreas: { "None of the above": 95, "Creating estimates or proposals": 36, "Administrative work": 31, "Lead generation and follow-up": 28, "Communicating with customers during a job": 20, "Managing insurance claims or supplements": 12, "Scheduling and job tracking": 10, "Managing team members or subcontractors": 10, "Invoicing and collecting payments": 8, "Other": 12 },
+      barrierToAI: { "Don't see the value yet": 14, "Don't trust the output": 7, "Too complicated or time-consuming to set up": 12, "Privacy or data concerns": 6, "No time to figure it out": 0, "My team isn't on board": 5, "Other": 6 },
+      outsideAIUsage: { "Yes, I use them regularly": 44, "Yes, I've tried a few": 48, "I tried one but stopped": 6, "No, but I'd be open to it": 46, "No, and I'm not really interested": 30 },
+      overallView: { "A major opportunity": 55, "A useful but limited tool": 65, "Not sure yet": 45, "Not relevant to my work": 15, "A potential threat": 2 },
+      comfortScale: { 1: 28, 2: 36, 3: 53, 4: 38, 5: 33 },
+      transparencyImportance: { "Always want to know": 72, "For high-stakes tasks only": 35, "Neutral — just needs to work": 37, "Not important": 8, "Not sure": 16 },
+      concerns: { "Inaccurate output": 118, "Don't trust AI with customer relationships": 78, "Data privacy or security": 64, "Worried about cost": 52, "No time to learn": 34, "Might reduce need for my team": 24, "No concerns": 18, "Other": 6 },
+      confidenceBuilders: { "Review it before anything is sent or saved": 109, "Free trial or no added cost": 68, "See it work on a low-stakes task first": 65, "Knowing my data stays private": 24, "Hearing other roofing businesses use it": 18, "Something else": 5 },
+      interviewOptIn: { "Yes, contact me": 107, "No thanks": 67 },
+      aiReadinessSegments: { "Current Users": 44, "AI-Curious": 52, "Accidental Users": 18, "Skeptics": 30 },
+    };
+
+    const ACCENT = "#3B6FE8";
+
+    function Bar({ label, value, max, color }) {
+      const pct = Math.round((value / max) * 100);
+      return (
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 3 }}>
+            <span style={{ color: "#333", maxWidth: "72%", lineHeight: 1.3 }}>{label}</span>
+            <span style={{ fontWeight: 700, color: color || ACCENT }}>{value}</span>
+          </div>
+          <div style={{ background: "#EEF3FD", borderRadius: 4, height: 7 }}>
+            <div style={{ background: color || ACCENT, width: `${pct}%`, height: 7, borderRadius: 4, transition: "width 0.4s" }} />
+          </div>
+        </div>
+      );
+    }
+
+    function Card({ title, children, accent }) {
+      return (
+        <div style={{ background: "#fff", borderRadius: 10, padding: 20, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", borderTop: `3px solid ${accent || ACCENT}` }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: accent || ACCENT, textTransform: "uppercase", letterSpacing: 1, marginBottom: 14 }}>{title}</div>
+          {children}
+        </div>
+      );
+    }
+
+    function Note({ children }) {
+      return <div style={{ marginTop: 10, fontSize: 12, color: "#555", background: "#F5F7FC", padding: 10, borderRadius: 6, lineHeight: 1.5 }}>{children}</div>;
+    }
+
+    function Callout({ children }) {
+      return <div style={{ background: "#EBF1FF", borderRadius: 8, padding: 14, fontSize: 13, color: "#1a3a8f", lineHeight: 1.5, marginBottom: 4 }}>{children}</div>;
+    }
+
+    const TABS = ["Overview", "Pain Points", "AI Usage", "Sentiment", "Segmentation"];
+
+    function App() {
+      const [tab, setTab] = useState("Overview");
+
+      return (
+        <div style={{ fontFamily: "'Inter', sans-serif", background: "#F5F7FC", minHeight: "100vh", padding: 20 }}>
+          <div style={{ maxWidth: 900, margin: "0 auto" }}>
+
+            <div style={{ marginBottom: 20 }}>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>AI Perception Survey — Results</h1>
+              <p style={{ color: "#777", fontSize: 13, marginTop: 4 }}>Based on {data.completedResponses} completed responses from {data.totalRows} total entries</p>
+            </div>
+
+            <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+              {TABS.map(t => (
+                <button key={t} onClick={() => setTab(t)} style={{
+                  padding: "7px 16px", borderRadius: 20, border: "none", cursor: "pointer",
+                  fontSize: 13, fontWeight: 600,
+                  background: tab === t ? ACCENT : "#fff",
+                  color: tab === t ? "#fff" : "#555",
+                  boxShadow: tab === t ? "0 2px 8px rgba(59,111,232,0.3)" : "0 1px 4px rgba(0,0,0,0.08)"
+                }}>{t}</button>
+              ))}
+            </div>
+
+            {tab === "Overview" && (
+              <div style={{ display: "grid", gap: 16 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+                  {[
+                    { label: "Completed responses", value: 182, sub: "of 237 total entries" },
+                    { label: "Interview opt-ins", value: 107, sub: "vs 15–24 target" },
+                    { label: "Not using AI today", value: "52%", sub: "of respondents" },
+                    { label: "Average AI comfort", value: "2.9/5", sub: "neutral, leaning cautious" },
+                  ].map(s => (
+                    <div key={s.label} style={{ background: "#fff", borderRadius: 10, padding: 16, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", borderTop: `3px solid ${ACCENT}`, textAlign: "center" }}>
+                      <div style={{ fontSize: 30, fontWeight: 800, color: ACCENT, lineHeight: 1 }}>{s.value}</div>
+                      <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>{s.label}</div>
+                      <div style={{ fontSize: 10, color: "#999", marginTop: 2 }}>{s.sub}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <Card title="Company Size">
+                    {Object.entries(data.companySize).map(([k, v]) => (
+                      <Bar key={k} label={k} value={v} max={Math.max(...Object.values(data.companySize))} />
+                    ))}
+                  </Card>
+                  <Card title="Primary Role">
+                    {Object.entries(data.roles).map(([k, v]) => (
+                      <Bar key={k} label={k} value={v} max={Math.max(...Object.values(data.roles))} />
+                    ))}
+                  </Card>
+                </div>
+                <Card title="Work Type (multi-select)">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 24px" }}>
+                    {Object.entries(data.workType).map(([k, v]) => (
+                      <Bar key={k} label={k} value={v} max={182} />
+                    ))}
+                  </div>
+                </Card>
+              </div>
+            )}
+
+            {tab === "Pain Points" && (
+              <div style={{ display: "grid", gap: 16 }}>
+                <Callout><strong>Key finding:</strong> Creating estimates and proposals is #1 on both the most time-consuming AND most repetitive task lists — the only category that tops both. This is the clearest signal in the data for where AI should start.</Callout>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <Card title="Most Time-Consuming Tasks (select up to 3)">
+                    {Object.entries(data.timeConsumingTasks).sort((a,b)=>b[1]-a[1]).map(([k,v]) => (
+                      <Bar key={k} label={k} value={v} max={182} />
+                    ))}
+                  </Card>
+                  <Card title="Most Repetitive Tasks (select up to 3)">
+                    {Object.entries(data.repetitiveTasks).sort((a,b)=>b[1]-a[1]).map(([k,v]) => (
+                      <Bar key={k} label={k} value={v} max={182} color="#6B9EF5" />
+                    ))}
+                  </Card>
+                </div>
+                <Card title="Highest-Priority Areas for AI (appear in top 5 of both lists)" accent="#2d8a4e">
+                  {[
+                    { label: "Creating estimates or proposals", time: 95, rep: 87 },
+                    { label: "Administrative work", time: 65, rep: 68 },
+                    { label: "Lead generation and follow-up", time: 64, rep: 46 },
+                    { label: "Managing insurance claims", time: 49, rep: 38 },
+                  ].map(r => (
+                    <div key={r.label} style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 5 }}>{r.label}</div>
+                      <div style={{ display: "flex", gap: 8, fontSize: 12 }}>
+                        <span style={{ background: ACCENT, color: "#fff", borderRadius: 4, padding: "2px 10px" }}>Time-consuming: {r.time}</span>
+                        <span style={{ background: "#6B9EF5", color: "#fff", borderRadius: 4, padding: "2px 10px" }}>Repetitive: {r.rep}</span>
+                      </div>
+                    </div>
+                  ))}
+                </Card>
+              </div>
+            )}
+
+            {tab === "AI Usage" && (
+              <div style={{ display: "grid", gap: 16 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <Card title="AI Tool Usage Outside Business Software">
+                    {Object.entries(data.outsideAIUsage).map(([k,v]) => (
+                      <Bar key={k} label={k} value={v} max={182} />
+                    ))}
+                    <Note><strong>54%</strong> have tried or regularly use AI outside their business software. They're open to AI — they just haven't found it in their roofing workflow yet.</Note>
+                  </Card>
+                  <Card title="Where AI is Used in Business Today (multi-select)">
+                    {Object.entries(data.aiUsageAreas).sort((a,b)=>b[1]-a[1]).map(([k,v]) => (
+                      <Bar key={k} label={k} value={v} max={182} color={k === "None of the above" ? "#ccc" : ACCENT} />
+                    ))}
+                  </Card>
+                </div>
+                <Card title="Biggest Barrier to AI Adoption (non-users only)" accent="#E8704A">
+                  {Object.entries(data.barrierToAI).sort((a,b)=>b[1]-a[1]).map(([k,v]) => (
+                    <Bar key={k} label={k} value={v} max={Math.max(...Object.values(data.barrierToAI))} color="#E8704A" />
+                  ))}
+                  <Note>Top barriers are practical: not seeing the value yet, and setup being too complicated. These are addressable with low-risk on-ramps — not deep trust-building campaigns.</Note>
+                </Card>
+              </div>
+            )}
+
+            {tab === "Sentiment" && (
+              <div style={{ display: "grid", gap: 16 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <Card title="Overall View of AI in Roofing">
+                    {Object.entries(data.overallView).map(([k,v]) => (
+                      <Bar key={k} label={k} value={v} max={182} />
+                    ))}
+                    <Note>36% see it as a major opportunity. 36% see it as useful but limited. Only 8% see it as not relevant, and 1% see it as a threat.</Note>
+                  </Card>
+                  <Card title="Comfort with AI Tools (1=Very Uncomfortable, 5=Very Comfortable)">
+                    {Object.entries(data.comfortScale).map(([k,v]) => (
+                      <Bar key={k} label={`${k} — ${k <= 2 ? "Uncomfortable" : k == 3 ? "Neutral" : "Comfortable"}`} value={v} max={Math.max(...Object.values(data.comfortScale))} />
+                    ))}
+                    <Note>Average: <strong>2.9 / 5</strong> — centred on neutral. Not resistant, not enthusiastic. Waiting to be shown something that works.</Note>
+                  </Card>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <Card title="How Important is it to Know AI is Involved?" accent="#8B5CF6">
+                    {Object.entries(data.transparencyImportance).map(([k,v]) => (
+                      <Bar key={k} label={k} value={v} max={182} color="#8B5CF6" />
+                    ))}
+                    <Note><strong>57%</strong> want to know when AI is involved (always or for high-stakes tasks). Only 4% say it doesn't matter at all.</Note>
+                  </Card>
+                  <Card title="Top Concerns About AI (multi-select)" accent="#E8704A">
+                    {Object.entries(data.concerns).sort((a,b)=>b[1]-a[1]).map(([k,v]) => (
+                      <Bar key={k} label={k} value={v} max={182} color="#E8704A" />
+                    ))}
+                  </Card>
+                </div>
+                <Card title="What Would Build Confidence to Try a Roofr AI Feature?" accent="#2d8a4e">
+                  {Object.entries(data.confidenceBuilders).sort((a,b)=>b[1]-a[1]).map(([k,v]) => (
+                    <Bar key={k} label={k} value={v} max={182} color="#2d8a4e" />
+                  ))}
+                  <Note><strong>"Review before send or save"</strong> (109) is nearly double the next answer. Combined with free trial (68) and low-stakes first (65), the pattern is clear: <em>low cost, low risk, human in control.</em></Note>
+                </Card>
+              </div>
+            )}
+
+            {tab === "Segmentation" && (
+              <div style={{ display: "grid", gap: 16 }}>
+                <Callout><strong>How segments are derived:</strong> AI Readiness is calculated from responses to outside AI tool usage and in-product AI usage questions. Segments are directional — some respondents skipped one or both questions.</Callout>
+                <Card title="AI Readiness Segments">
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 16 }}>
+                    {[
+                      { label: "Current Users", value: 44, desc: "Actively using AI, regularly or tried a few", color: "#2d8a4e" },
+                      { label: "AI-Curious", value: 52, desc: "Haven't used AI but open to it, or tried and stopped", color: ACCENT },
+                      { label: "Accidental Users", value: 18, desc: "Not seeking AI but using features in existing tools without knowing it", color: "#E8A44A" },
+                      { label: "Skeptics", value: 30, desc: "Not interested and not using AI features", color: "#E8704A" },
+                    ].map(s => (
+                      <div key={s.label} style={{ background: "#F5F7FC", borderRadius: 8, padding: 14, borderTop: `3px solid ${s.color}` }}>
+                        <div style={{ fontSize: 30, fontWeight: 800, color: s.color }}>{s.value}</div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#333", marginTop: 4 }}>{s.label}</div>
+                        <div style={{ fontSize: 11, color: "#666", marginTop: 4, lineHeight: 1.4 }}>{s.desc}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <Note><strong>Accidental Users</strong> are a key segment for native Roofr AI features — they're already being exposed passively and can be converted without needing to sell "AI" explicitly.</Note>
+                </Card>
+                <Card title="Interview Pipeline" accent="#2d8a4e">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                    <div>
+                      <Bar label="Yes, contact me" value={107} max={182} color="#2d8a4e" />
+                      <Bar label="No thanks" value={67} max={182} color="#ccc" />
+                      <Note><strong>107 opt-ins</strong> against a target of 15–24. Strong pool to screen from across all 4 segments.</Note>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10, color: "#333" }}>Recommended interview targets</div>
+                      {[
+                        { segment: "AI-Curious (5–8)", note: "Largest opportunity — find what's blocking them" },
+                        { segment: "Current Users (5–8)", note: "Understand what's working and where Roofr fits" },
+                        { segment: "Skeptics (3–5)", note: "ACV laddering — understand core fears and values" },
+                        { segment: "Accidental Users (3–5)", note: "Explore pathway from passive to active use" },
+                      ].map(r => (
+                        <div key={r.segment} style={{ marginBottom: 10, fontSize: 12, lineHeight: 1.4 }}>
+                          <span style={{ fontWeight: 700 }}>{r.segment}:</span>{" "}
+                          <span style={{ color: "#555" }}>{r.note}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )}
+
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
