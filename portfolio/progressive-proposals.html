@@ -128,7 +128,7 @@
 
         <p class="cs-p">The roadmap reorganization reordered the queue around a single question: what's the minimum we need to ship for a new user to successfully send their first proposal without completing full setup? That work moved to the front. Feature-depth work moved behind it.</p>
 
-        <p class="cs-p">This is a product management decision embedded in a design process. It required building alignment with the PM and engineering lead around a diagnosis — "the bottleneck is setup prerequisites, not proposal features" — before any design work started.</p>
+        <p class="cs-p">This is a product management decision embedded in a design process. It required building alignment with the PM and engineering lead around a diagnosis — "the bottleneck is setup prerequisites, not proposal features" — before any design work started. I ran workshops with Lane, Felipe, and Fabricio to map the full roadmap against this constraint and reorganize priorities around the activation problem.</p>
 
         <h3 class="cs-h3">The unlock strategy</h3>
         <p class="cs-p">Instead of redesigning the setup flow, the solution was to make setup optional for first activation:</p>
@@ -195,7 +195,33 @@
             <div class="metric-desc">Proposals sent growth Mar 2023 → Mar 2026 (6,716 → 57,018) — the platform scale that makes fixing activation compound</div>
           </div>
         </div>
-        <p class="cs-p">These are the baseline numbers the initiative is built to move. 16 days to a first proposal and a 33% conversion rate quantify the activation wall. As the unlock projects ship — seeded templates, measurement sidebar, logo setup — this section will update with the before/after delta.</p>
+        <p class="cs-p">These are the baseline numbers the initiative is built to move. 16 days to a first proposal and a 33% conversion rate quantify the activation wall. These epics are already in progress as a direct result of the roadmap reprioritization:</p>
+
+        <div style="margin-top:16px; margin-bottom:20px;">
+          <div class="blocker-row">
+            <div class="blocker-num" style="color:var(--c-blue);">PRO-15183</div>
+            <div class="blocker-content">
+              <div class="blocker-title">Add and Edit Measurements in Proposals</div>
+              <div class="blocker-desc">Removes a major activation blocker by letting users work with measurement data directly inside the proposal — no need to start over with a new document flow.</div>
+            </div>
+          </div>
+          <div class="blocker-row">
+            <div class="blocker-num" style="color:var(--c-blue);">PRO-15144</div>
+            <div class="blocker-content">
+              <div class="blocker-title">Save Proposal as a Template</div>
+              <div class="blocker-desc">Closes the loop for users who build a good proposal but have no way to reuse it. Also enables proposal-first creation with no setup blockers required upfront.</div>
+            </div>
+          </div>
+          <div class="blocker-row">
+            <div class="blocker-num" style="color:var(--c-blue);">PRO-15033</div>
+            <div class="blocker-content">
+              <div class="blocker-title">Save Line Items to Catalog from Proposals</div>
+              <div class="blocker-desc">Lets contractors build their catalog organically from work they're already doing — rather than treating catalog setup as a prerequisite gate before first use.</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="cs-p">23 engineering points of QOL improvements I identified have also shipped this review period — small unlocks that compound on each other rather than waiting for a single large release.</p>
         <div class="cs-source-links">
           <a class="cs-source-link" href="https://app.amplitude.com/analytics/roofr1/chart/m791lkp3" target="_blank" rel="noopener">↗ Amplitude — Activation funnel</a>
           <a class="cs-source-link" href="https://app.amplitude.com/analytics/roofr1/chart/36a65bqq" target="_blank" rel="noopener">↗ Amplitude — 4-year proposals growth</a>
@@ -212,6 +238,9 @@
           <p class="cs-p">The strategic contribution here wasn't the individual designs — it was identifying that the proposals activation problem was upstream of proposals. That diagnosis changed what got built and in what order.</p>
 
           <p class="cs-p">Framing the problem as "prerequisites block activation" rather than "proposals UX is hard" led to a completely different solution set. The roadmap reorganization was the direct result of that reframe.</p>
+
+          <h3 class="cs-h3">Discovery running in parallel with delivery</h3>
+          <p class="cs-p">Alongside active delivery, I initiated conversations with Kim, Lane, Diana, and Tim about per-square pricing as a research initiative — connecting it to the activation work as a related constraint on the proposals experience. Running early discovery while shipping isn't part of the standard role scope. It's how I stay ahead of what the roadmap will need next.</p>
 
           <h3 class="cs-h3">Pattern that scales</h3>
           <p class="cs-p">The prerequisite-blocking pattern isn't unique to proposals. Several other Roofr features require significant setup before first use. The progressive setup approach — seeded defaults, flexible pathways, optional full configuration — is a pattern that could apply to onboarding for any setup-heavy feature.</p>

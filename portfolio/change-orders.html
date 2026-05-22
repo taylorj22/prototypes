@@ -208,6 +208,9 @@
           <div class="phase-step done">Sync</div>
         </div>
 
+        <h3 class="cs-h3">Engineering jams — earlier alignment, fewer surprises</h3>
+        <p class="cs-p">Alongside the design work, I introduced a new format with the Proposals engineering team: small working sessions early in the design process, before specs were locked. The goal was to surface the "why" behind design decisions before handoff, and to use engineering's technical perspective to stress-test patterns before they became hard to change. Edge cases and data model questions that would otherwise surface during QA got resolved in these sessions instead.</p>
+
         <h3 class="cs-h3">Map the downstream impact first</h3>
         <p class="cs-p">Before any screens were designed, the work was to map every system a change order touches and define the relationship with each. Six cross-product dependencies:</p>
 
@@ -329,6 +332,12 @@
 
           <h3 class="cs-h3">Cross-team coordination</h3>
           <p class="cs-p">Six cross-product dependencies meant six conversations across teams. The change orders design touched the invoices team, the job costing implementation, the performance dashboard, the material orders data model, and the work orders flow. Coordinating those dependencies — surfacing where decisions in one area constrained choices in another — was a significant part of the work.</p>
+
+          <h3 class="cs-h3">IRE — validating with real contractors before GA</h3>
+          <p class="cs-p">Before Change Orders reached general availability, I prepared a specific set of prototypes for Nic to share at IRE (International Roofing Expo). This was product advocacy outside normal channels: putting the design in front of real contractors at an industry event to get reactions before the feature shipped. The feedback from those conversations informed prioritization decisions that carried into development.</p>
+
+          <h3 class="cs-h3">Mobile built on the PWA foundation</h3>
+          <p class="cs-p">The 77 mobile components established in the PWA redesign paid forward directly to Change Orders. Mobile Change Orders (PRO-14724) was built on top of the existing pull cards, FABs, and bottom sheet patterns — and was completed in less than half the originally estimated timeframe as a result.</p>
 
           <h3 class="cs-h3">Foundation for automation</h3>
           <p class="cs-p">The long-term vision — change orders that auto-generate work orders and material orders, update job costing in real time, trigger automations, and flow into QuickBooks — is only achievable because the data model was designed for it from the start. The phase 1 scope is conservative. The architecture is not.</p>
