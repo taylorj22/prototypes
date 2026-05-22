@@ -324,9 +324,7 @@ body {
    ─────────────────────────────────────────── */
 
 .section-contributions {
-  padding: var(--s-xl) var(--pad);
-  max-width: calc(var(--max) + var(--pad) * 2);
-  margin: 0 auto;
+  padding: var(--s-xl) 0;
 }
 
 .contrib-grid {
@@ -334,6 +332,10 @@ body {
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
   margin-top: 24px;
+  padding: 0 var(--pad);
+  max-width: calc(var(--max) + var(--pad) * 2);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .contrib-card {

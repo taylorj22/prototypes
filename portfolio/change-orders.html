@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Change Orders — Taylor Jackson</title>
+  <title>Change Orders, Taylor Jackson</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230B0C10'/><text x='16' y='22' font-family='sans-serif' font-size='13' font-weight='600' fill='white' text-anchor='middle'>TJ</text></svg>">
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="styles.css">
@@ -131,7 +131,7 @@
       <div class="cs-sec-label">Context</div>
       <div class="cs-content">
         <h3 class="cs-h3">Scope changes had nowhere to live</h3>
-        <p class="cs-p">Every roofing job changes after the contract is signed. The scope shifts, materials get swapped, the customer adds a skylight. Roofr had no dedicated way to handle post-sale scope changes — so contractors built their own workarounds.</p>
+        <p class="cs-p">Every roofing job changes after the contract is signed. The scope shifts, materials get swapped, the customer adds a skylight. Roofr had no dedicated way to handle post-sale scope changes, so contractors built their own workarounds.</p>
 
         <div style="margin-top: 16px;">
           <div class="workaround-row">
@@ -143,7 +143,7 @@
           <div class="workaround-row">
             <div class="workaround-content">
               <div class="workaround-title">Use PDF Signer or external signing tools</div>
-              <div class="workaround-impact">The change gets documented, but it lives outside Roofr — disconnected from the job, the invoice, and the financial picture. Downstream value never materialises.</div>
+              <div class="workaround-impact">The change gets documented, but it lives outside Roofr, disconnected from the job, the invoice, and the financial picture. Downstream value never materialises.</div>
             </div>
           </div>
           <div class="workaround-row">
@@ -175,7 +175,7 @@
         </div>
 
         <div class="cs-callout">
-          <p><strong>The design question:</strong> What if change orders lived inside the proposal flow? Keep scope changes tied to the original contract. Keep data connected. Eliminate the duplicate work — and make sure every approved change syncs downstream automatically.</p>
+          <p><strong>The design question:</strong> What if change orders lived inside the proposal flow? Keep scope changes tied to the original contract. Keep data connected. Eliminate the duplicate work, and make sure every approved change syncs downstream automatically.</p>
         </div>
       </div>
     </section>
@@ -208,7 +208,7 @@
           <div class="phase-step done">Sync</div>
         </div>
 
-        <h3 class="cs-h3">Engineering jams — earlier alignment, fewer surprises</h3>
+        <h3 class="cs-h3">Engineering jams: earlier alignment, fewer surprises</h3>
         <p class="cs-p">Alongside the design work, I introduced a new format with the Proposals engineering team: small working sessions early in the design process, before specs were locked. The goal was to surface the "why" behind design decisions before handoff, and to use engineering's technical perspective to stress-test patterns before they became hard to change. Edge cases and data model questions that would otherwise surface during QA got resolved in these sessions instead.</p>
 
         <h3 class="cs-h3">Map the downstream impact first</h3>
@@ -228,17 +228,17 @@
         <div style="margin-top:4px;">
           <div class="decision-row">
             <div class="decision-q">What is the relationship between a change order and the original proposal?</div>
-            <div class="decision-a">A change order is tied to a specific won proposal — not created as a standalone document. This preserves contract history and makes the change legible in context of the original agreement.</div>
+            <div class="decision-a">A change order is tied to a specific won proposal, not created as a standalone document. This preserves contract history and makes the change legible in context of the original agreement.</div>
             <div class="decision-why">Deferred decision would have created a data model inconsistency that's hard to untangle retroactively.</div>
           </div>
           <div class="decision-row">
             <div class="decision-q">When a change order is approved, how does it affect the invoice?</div>
-            <div class="decision-a">Two options: append the change order amount to an existing invoice, or generate a separate invoice. Both are supported. The contractor chooses at the time of approval — discovered via user research that both workflows are common.</div>
-            <div class="decision-why">Not deferring this to "phase 2" — half-built invoicing integration would create user confusion about where the money goes.</div>
+            <div class="decision-a">Two options: append the change order amount to an existing invoice, or generate a separate invoice. Both are supported. The contractor chooses at the time of approval, discovered via user research that both workflows are common.</div>
+            <div class="decision-why">Not deferring this to "phase 2": half-built invoicing integration would create user confusion about where the money goes.</div>
           </div>
           <div class="decision-row">
             <div class="decision-q">When does a change order update job costing?</div>
-            <div class="decision-a">On approval, not on creation. An unapproved change order represents potential scope — not committed revenue. Job costing reflects committed scope only.</div>
+            <div class="decision-a">On approval, not on creation. An unapproved change order represents potential scope, not committed revenue. Job costing reflects committed scope only.</div>
             <div class="decision-why">Getting this wrong in the data model means reporting shows incorrect job margins until the inconsistency is fixed.</div>
           </div>
           <div class="decision-row">
@@ -254,18 +254,18 @@
     <div class="cs-section-images fade-in">
       <div class="cs-img-label">Design</div>
       <div class="cs-source-links" style="margin-bottom:20px;">
-        <a class="cs-source-link" href="https://www.figma.com/design/AQ70SIa3ZC7ZYsGxSr2nPK/Change-orders?node-id=2185-38350" target="_blank" rel="noopener">↗ Figma — Change orders</a>
-        <a class="cs-source-link" href="https://www.figma.com/board/40eaSo9kHDoJ7aVcLk6pqN/Change-orders?node-id=4-105" target="_blank" rel="noopener">↗ FigJam — Engineering jams</a>
-        <a class="cs-source-link" href="https://www.notion.so/Change-Orders-1f4330ded8d0803b9f17f6f938107e76" target="_blank" rel="noopener">↗ Notion — PRD</a>
-        <a class="cs-source-link" href="https://roofrapp.atlassian.net/browse/PRO-12220" target="_blank" rel="noopener">↗ Jira — PRO-12220 (desktop)</a>
-        <a class="cs-source-link" href="https://roofrapp.atlassian.net/browse/PRO-14724" target="_blank" rel="noopener">↗ Jira — PRO-14724 (mobile)</a>
+        <a class="cs-source-link" href="https://www.figma.com/design/AQ70SIa3ZC7ZYsGxSr2nPK/Change-orders?node-id=2185-38350" target="_blank" rel="noopener">↗ Figma: Change orders</a>
+        <a class="cs-source-link" href="https://www.figma.com/board/40eaSo9kHDoJ7aVcLk6pqN/Change-orders?node-id=4-105" target="_blank" rel="noopener">↗ FigJam: Engineering jams</a>
+        <a class="cs-source-link" href="https://www.notion.so/Change-Orders-1f4330ded8d0803b9f17f6f938107e76" target="_blank" rel="noopener">↗ Notion: PRD</a>
+        <a class="cs-source-link" href="https://roofrapp.atlassian.net/browse/PRO-12220" target="_blank" rel="noopener">↗ Jira: PRO-12220 (desktop)</a>
+        <a class="cs-source-link" href="https://roofrapp.atlassian.net/browse/PRO-14724" target="_blank" rel="noopener">↗ Jira: PRO-14724 (mobile)</a>
       </div>
 
-      <iframe class="figma-embed" title="Figma — Change orders" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FAQ70SIa3ZC7ZYsGxSr2nPK%2FChange-orders%3Fnode-id%3D2185-38350" allowfullscreen></iframe>
-      <p class="figma-embed-caption">Figma — Change orders · Creation flow, invoice decision modal, job costing integration, mobile card, performance dashboard</p>
+      <iframe class="figma-embed" title="Figma: Change orders" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FAQ70SIa3ZC7ZYsGxSr2nPK%2FChange-orders%3Fnode-id%3D2185-38350" allowfullscreen></iframe>
+      <p class="figma-embed-caption">Figma: Change orders · Creation flow, invoice decision modal, job costing integration, mobile card, performance dashboard</p>
 
-      <iframe class="figma-embed" title="FigJam — Change orders engineering jams" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fboard%2F40eaSo9kHDoJ7aVcLk6pqN%2FChange-orders%3Fnode-id%3D4-105" allowfullscreen></iframe>
-      <p class="figma-embed-caption">FigJam — Early engineering jams · Cross-product dependency mapping, data model decisions, downstream impact analysis</p>
+      <iframe class="figma-embed" title="FigJam: Change orders engineering jams" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fboard%2F40eaSo9kHDoJ7aVcLk6pqN%2FChange-orders%3Fnode-id%3D4-105" allowfullscreen></iframe>
+      <p class="figma-embed-caption">FigJam: Early engineering jams · Cross-product dependency mapping, data model decisions, downstream impact analysis</p>
     </div>
 
     <!-- Roadmap -->
@@ -284,7 +284,7 @@
             <div class="roadmap-label" style="color:var(--c-shipped);">Shipped</div>
             <div class="roadmap-content">
               <strong>Mobile change orders (PRO-14724)</strong>
-              Change order card, mobile creation flow, approval on mobile. Built on the PWA patterns — completed in less than half the estimated timeframe.
+              Change order card, mobile creation flow, approval on mobile. Built on the PWA patterns, completed in less than half the estimated timeframe.
             </div>
           </div>
           <div class="roadmap-row">
@@ -305,18 +305,18 @@
         <div class="cs-metrics" style="margin-bottom:24px;">
           <div class="metric">
             <div class="metric-val">110</div>
-            <div class="metric-desc">Teams in gated open beta — desktop and mobile both shipped</div>
+            <div class="metric-desc">Teams in gated open beta, desktop and mobile both shipped</div>
           </div>
           <div class="metric">
             <div class="metric-val">&gt;5%</div>
-            <div class="metric-desc">Of all proposals have had a change order applied — early signal of real workflow adoption</div>
+            <div class="metric-desc">Of all proposals have had a change order applied, early signal of real workflow adoption</div>
           </div>
           <div class="metric pending">
             <div class="metric-val">—</div>
             <div class="metric-desc">% of change orders linked to invoices (tracking post-wider rollout)</div>
           </div>
         </div>
-        <p class="cs-p">Desktop and mobile are both shipped, with 110 teams in gated open beta. Change orders have already been applied to over 5% of all proposals in the beta cohort — early signal that this is landing as a real workflow tool, not a feature teams activate and ignore. Invoice linkage rate is the next KPI to track as rollout widens.</p>
+        <p class="cs-p">Desktop and mobile are both shipped, with 110 teams in gated open beta. Change orders have already been applied to over 5% of all proposals in the beta cohort, early signal that this is landing as a real workflow tool, not a feature teams activate and ignore. Invoice linkage rate is the next KPI to track as rollout widens.</p>
       </div>
     </section>
 
@@ -326,21 +326,21 @@
       <div class="cs-content">
         <div class="cs-reach-inner">
           <h3 class="cs-h3">Designing for the system, not the feature</h3>
-          <p class="cs-p">The most important design work on change orders wasn't the UI — it was the upstream decisions: what is the data model, how do the integrations work, what gets deferred and what can't be. These are product architecture decisions made before a screen was designed.</p>
+          <p class="cs-p">The most important design work on change orders wasn't the UI: it was the upstream decisions: what is the data model, how do the integrations work, what gets deferred and what can't be. These are product architecture decisions made before a screen was designed.</p>
 
           <p class="cs-p">Deferring the invoice integration, the job costing logic, or the data model relationship to "phase 2" would have shipped a feature that looked complete but created debt in every adjacent system. The design process forced these decisions to be made explicitly rather than implicitly.</p>
 
           <h3 class="cs-h3">Cross-team coordination</h3>
-          <p class="cs-p">Six cross-product dependencies meant six conversations across teams. The change orders design touched the invoices team, the job costing implementation, the performance dashboard, the material orders data model, and the work orders flow. Coordinating those dependencies — surfacing where decisions in one area constrained choices in another — was a significant part of the work.</p>
+          <p class="cs-p">Six cross-product dependencies meant six conversations across teams. The change orders design touched the invoices team, the job costing implementation, the performance dashboard, the material orders data model, and the work orders flow. Coordinating those dependencies, surfacing where decisions in one area constrained choices in another, was a significant part of the work.</p>
 
-          <h3 class="cs-h3">IRE — validating with real contractors before GA</h3>
+          <h3 class="cs-h3">IRE: validating with real contractors before GA</h3>
           <p class="cs-p">Before Change Orders reached general availability, I prepared a specific set of prototypes for Nic to share at IRE (International Roofing Expo). This was product advocacy outside normal channels: putting the design in front of real contractors at an industry event to get reactions before the feature shipped. The feedback from those conversations informed prioritization decisions that carried into development.</p>
 
           <h3 class="cs-h3">Mobile built on the PWA foundation</h3>
-          <p class="cs-p">The 77 mobile components established in the PWA redesign paid forward directly to Change Orders. Mobile Change Orders (PRO-14724) was built on top of the existing pull cards, FABs, and bottom sheet patterns — and was completed in less than half the originally estimated timeframe as a result.</p>
+          <p class="cs-p">The 77 mobile components established in the PWA redesign paid forward directly to Change Orders. Mobile Change Orders (PRO-14724) was built on top of the existing pull cards, FABs, and bottom sheet patterns, and was completed in less than half the originally estimated timeframe as a result.</p>
 
           <h3 class="cs-h3">Foundation for automation</h3>
-          <p class="cs-p">The long-term vision — change orders that auto-generate work orders and material orders, update job costing in real time, trigger automations, and flow into QuickBooks — is only achievable because the data model was designed for it from the start. The phase 1 scope is conservative. The architecture is not.</p>
+          <p class="cs-p">The long-term vision, change orders that auto-generate work orders and material orders, update job costing in real time, trigger automations, and flow into QuickBooks, is only achievable because the data model was designed for it from the start. The phase 1 scope is conservative. The architecture is not.</p>
         </div>
       </div>
     </section>
