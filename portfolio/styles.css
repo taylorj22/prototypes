@@ -70,11 +70,11 @@ body {
 /* Hero */
 .hero {
   background: var(--c-dark);
-  min-height: 100vh;
+  min-height: 50vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: var(--s-xxl) var(--pad) 88px;
+  padding: var(--s-xl) var(--pad) 56px;
   position: relative;
   overflow: hidden;
 }
