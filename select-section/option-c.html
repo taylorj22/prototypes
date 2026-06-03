@@ -155,7 +155,7 @@
     .section-inner { display: flex; align-items: center; height: 42px; padding: 0 10px 0 0; gap: 8px; }
     .section-inner > .drag-dots { width: 20px; flex-shrink: 0; }
     .section-name-text { font-size: var(--Sizes-Small); font-weight: 500; color: #fff; flex: 1; }
-    .section-color-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; opacity: 0.9; }
+    .section-color-dot { display: none; }
 
     /* ── SECTION ROW ACTIONS CELL ── */
     .td-actions-section {
@@ -325,7 +325,7 @@
     }
     .picker-option:last-child { border-bottom: none; }
     .picker-option:hover { background: var(--components-Menu_Dropdown-Default-hover); }
-    .picker-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .picker-dot { display: none; }
     .picker-option-name { flex: 1; font-weight: 500; }
     .picker-count {
       font-size: var(--Sizes-Smaller); color: var(--text-inactive);
