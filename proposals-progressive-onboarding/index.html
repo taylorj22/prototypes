@@ -770,6 +770,145 @@
       font-size: 11px; font-weight: 500; line-height: 1;
       vertical-align: middle; margin-left: 6px;
     }
+    /* ── Jumpstart modal (shared) ── */
+    .js-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 3000; padding: 40px;
+      opacity: 0; pointer-events: none; transition: opacity 200ms ease;
+    }
+    .js-overlay.open { opacity: 1; pointer-events: all; }
+    .js-modal {
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 4px 36px rgba(0,0,0,0.12);
+      width: 100%; max-width: 480px;
+      transform: translateY(8px); transition: transform 200ms ease;
+      overflow: hidden; position: relative;
+    }
+    .js-overlay.open .js-modal { transform: translateY(0); }
+    .js-modal-header { padding: 28px 28px 20px; }
+    .js-modal-icon-wrap {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: #E7F1FC; display: flex; align-items: center; justify-content: center;
+      color: var(--blue); margin-bottom: 14px;
+    }
+    .js-modal-icon-wrap svg { flex-shrink: 0; }
+    .js-modal-title { font-size: 20px; font-weight: 500; color: #0B0F12; margin-bottom: 4px; line-height: 1.3; }
+    .js-modal-sub { font-size: 14px; color: #6B7980; line-height: 1.5; }
+    .js-cat-list {
+      border-top: 1px solid #E1E4E6; border-bottom: 1px solid #E1E4E6;
+      margin: 0;
+    }
+    .js-cat-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 28px; border-top: 1px solid #E1E4E6;
+    }
+    .js-cat-row:first-child { border-top: none; }
+    .js-cat-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .js-cat-icon.blue { background: var(--blue-10); color: var(--icon-primary); }
+    .js-cat-icon.green { background: var(--green-20); color: var(--icon-success); }
+    .js-cat-icon.mist { background: var(--mist); color: var(--icon-muted); }
+    .js-cat-body { flex: 1; }
+    .js-cat-name { font-size: 14px; font-weight: 500; color: #0B0F12; }
+    .js-cat-desc { font-size: 12px; color: #6B7980; margin-top: 1px; }
+    .js-cat-count {
+      font-size: 12px; font-weight: 500; color: #6B7980;
+      background: #F4F5F5; border-radius: 999px; padding: 3px 9px; white-space: nowrap;
+    }
+    .js-modal-footer {
+      padding: 16px 28px 24px;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
+    .js-modal-note { font-size: 12px; color: #6B7980; }
+    .js-modal-actions { display: flex; gap: 8px; }
+
+    /* ── Version A: empty catalog sidebar ── */
+    .sidebar-catalog-empty {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center;
+      padding: 24px 16px; flex: 1;
+    }
+    .sidebar-catalog-empty-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: #EDF0F2; display: flex; align-items: center; justify-content: center;
+      color: #6B7980; margin: 0 auto 14px;
+    }
+    .sidebar-catalog-empty h5 {
+      font-size: 14px; font-weight: 500; color: #0B0F12; margin-bottom: 6px; line-height: 1.4;
+    }
+    .sidebar-catalog-empty p {
+      font-size: 12px; color: #6B7980; line-height: 1.6; margin-bottom: 16px;
+    }
+    .sidebar-catalog-populated { display: none; }
+
+    /* Version A — after activation */
+    [data-pv="a"][data-js-active="1"] .sidebar-catalog-empty { display: none; }
+    [data-pv="a"][data-js-active="1"] .sidebar-catalog-populated { display: block; }
+
+    /* ── Version B: inline item picker ── */
+    .add-line-picker-wrap { position: relative; }
+    .add-line-picker {
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+      background: #fff; border: 1px solid #E1E4E6; border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1); z-index: 100; overflow: hidden;
+      display: none;
+    }
+    .add-line-picker.open { display: block; animation: fadeIn 150ms ease forwards; }
+    .picker-search {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-bottom: 1px solid #E1E4E6;
+      color: #A6A8A9; font-size: 14px;
+    }
+    .picker-search svg { flex-shrink: 0; }
+    .picker-zero {
+      padding: 20px 16px; text-align: center;
+    }
+    .picker-zero-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: #EDF0F2; display: flex; align-items: center; justify-content: center;
+      color: #6B7980; margin: 0 auto 10px;
+    }
+    .picker-zero h5 { font-size: 13px; font-weight: 500; color: #0B0F12; margin-bottom: 4px; }
+    .picker-zero p { font-size: 12px; color: #6B7980; margin-bottom: 12px; line-height: 1.5; }
+    .picker-zero-divider {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; color: #A6A8A9; margin: 10px 0;
+    }
+    .picker-zero-divider::before, .picker-zero-divider::after {
+      content: ''; flex: 1; height: 1px; background: #E1E4E6;
+    }
+    .picker-items { display: none; }
+    .picker-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 14px; font-size: 13px; cursor: pointer;
+      transition: background 150ms ease; border-top: 1px solid #E1E4E6;
+    }
+    .picker-item:first-child { border-top: none; }
+    .picker-item:hover { background: #F3F8FD; }
+    .picker-item-name { font-weight: 500; color: #0B0F12; }
+    .picker-item-price { color: #6B7980; font-size: 12px; }
+    .picker-footer {
+      padding: 10px 14px; border-top: 1px solid #E1E4E6;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .picker-footer-hint { font-size: 11px; color: #A6A8A9; }
+
+    /* Version B — after activation: hide zero state, show item list */
+    [data-pv="b"][data-js-active="1"] .picker-zero { display: none; }
+    [data-pv="b"][data-js-active="1"] .picker-items { display: block; }
+    [data-pv="b"][data-js-active="1"] .picker-footer { display: flex; }
+
+    /* Version visibility */
+    .pv-a-only, .pv-b-only { display: none !important; }
+    [data-pv="a"] .pv-a-only { display: block !important; }
+    [data-pv="b"] .pv-b-only { display: block !important; }
+
+    /* Version B: collapse the right sidebar so canvas gets more room */
+    [data-pv="b"] .proposal-sidebar { display: none; }
+
     /* ── Cover page ── */
     .cover-screen {
       min-height: calc(100vh - 38px); display: flex; flex-direction: column;
@@ -847,8 +986,7 @@
   <button class="proto-btn" onclick="show('questionnaire')">2. Questionnaire (modal)</button>
   <button class="proto-btn" onclick="show('template-selection')">3. Template selection</button>
   <button class="proto-btn" onclick="show('seeding-success')">4. Setup complete</button>
-  <button class="proto-btn" onclick="show('proposal-builder')">5. Proposal builder</button>
-  <button class="proto-btn" onclick="show('catalog-educated')">6. Catalog (seeded)</button>
+  <button class="proto-btn" onclick="show('catalog-educated')">5. Catalog (seeded)</button>
 </nav>
 
 <!-- Toast -->
@@ -1169,14 +1307,8 @@
         <div class="cover-card-desc">Confirmation showing templates and catalog items added, with next steps to create a proposal</div>
         <div class="cover-card-arrow">View screen →</div>
       </div>
-      <div class="cover-card" onclick="show('proposal-builder')">
-        <div class="cover-card-num">05</div>
-        <div class="cover-card-title">Proposal builder</div>
-        <div class="cover-card-desc">Inline catalog writeback — line items added to a proposal are automatically saved back to the catalog</div>
-        <div class="cover-card-arrow">View screen →</div>
-      </div>
       <div class="cover-card" onclick="show('catalog-educated')">
-        <div class="cover-card-num">06</div>
+        <div class="cover-card-num">05</div>
         <div class="cover-card-title">Catalog (seeded state)</div>
         <div class="cover-card-desc">What users see when they first visit the catalog after Roofr Jumpstart pre-loads their items</div>
         <div class="cover-card-arrow">View screen →</div>
@@ -1223,7 +1355,7 @@
       <div class="proposals-header">
         <div class="page-title">Proposals</div>
         <div style="display:flex;gap:10px;align-items:center">
-          <button class="btn btn-default btn-primary" onclick="show('proposal-builder')">
+          <button class="btn btn-default btn-primary" onclick="">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             New proposal
           </button>
@@ -1266,7 +1398,7 @@
               <h4>Create blank proposal</h4>
               <p>The fastest way to get a proposal out the door. Add line items as you go — no setup needed. Line items are saved back to your catalog automatically.</p>
               <div class="pathway-card-action">
-                <button class="btn btn-default btn-primary" onclick="show('proposal-builder')">
+                <button class="btn btn-default btn-primary" onclick="">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   Proposal
                 </button>
@@ -1443,96 +1575,6 @@
           <span class="tpl-breadcrumb-active">My templates</span>
         </div>
         <div class="tpl-thumb-grid" id="tpl-thumb-grid"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     SCREEN 5 — Proposal builder + writeback
-══════════════════════════════════════════ -->
-<div class="screen" id="screen-proposal-builder">
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="sidebar-logo-area">
-        <div class="sidebar-logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <div class="sidebar-company"><div class="sidebar-company-name">Johnson Roofing</div><div class="sidebar-company-plan">Essentials plan</div></div>
-      </div>
-      <div class="nav-section">
-        <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Proposals</div>
-        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Catalog</div>
-      </div>
-    </aside>
-    <div class="main" style="overflow:hidden">
-      <div class="proposals-header" style="margin-bottom:0">
-        <div style="display:flex;align-items:center;gap:8px">
-          <button class="btn btn-sm btn-ghost" onclick="show('proposals-empty')" style="padding:0 8px">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          </button>
-          <span style="font-size:var(--small);color:var(--text-muted)">Proposals</span>
-          <span style="font-size:var(--small);color:var(--text-muted)">/</span>
-          <span style="font-size:var(--small);font-weight:500;color:var(--text-highlight)">Johnson Residence</span>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-default btn-outline">Preview</button>
-          <button class="btn btn-default btn-primary">Send proposal</button>
-        </div>
-      </div>
-      <div class="wip-banner" role="alert">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <strong>WIP — DO NOT USE.</strong>
-        <span style="font-weight:400">This proposal builder screen is a static prototype mockup.</span>
-      </div>
-      <div class="proposal-shell" style="flex:1;margin-top:16px">
-        <div class="proposal-main">
-          <div class="proposal-canvas">
-            <div class="proposal-header-block">
-              <h2>Johnson Residence</h2>
-              <p>142 Oak Street, Springfield, IL · May 1, 2026</p>
-            </div>
-            <div class="line-section">
-              <div class="line-section-title">Materials</div>
-              <table class="line-table">
-                <thead><tr><th>Item</th><th>Qty</th><th>Unit</th><th style="text-align:right">Price</th></tr></thead>
-                <tbody>
-                  <tr><td>Atlas ProLam Shingles</td><td>24</td><td>Bundle</td><td style="text-align:right">$3,120</td></tr>
-                  <tr><td>Synthetic Underlayment</td><td>4</td><td>Roll</td><td style="text-align:right">$320</td></tr>
-                  <tr><td>Ice &amp; Water Shield</td><td>2</td><td>Roll</td><td style="text-align:right">$280</td></tr>
-                </tbody>
-              </table>
-              <div class="add-line" onclick="fireToast()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add line item
-                <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px">— click to demo catalog writeback</span>
-              </div>
-            </div>
-            <div class="line-section">
-              <div class="line-section-title">Labor</div>
-              <table class="line-table">
-                <thead><tr><th>Item</th><th>Qty</th><th>Unit</th><th style="text-align:right">Price</th></tr></thead>
-                <tbody>
-                  <tr><td>Tear-off &amp; Disposal</td><td>21</td><td>Square</td><td style="text-align:right">$2,100</td></tr>
-                  <tr><td>Installation Labor</td><td>21</td><td>Square</td><td style="text-align:right">$3,780</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="proposal-total">
-              <div class="total-box"><div class="total-label">Total</div><div class="total-amount">$9,600</div></div>
-            </div>
-          </div>
-        </div>
-        <div class="proposal-sidebar">
-          <h4>Catalog items</h4>
-          <div class="sidebar-sub">Click to add to proposal</div>
-          <div class="catalog-sug" onclick="fireToast()"><h5>Drip Edge</h5><p>Per linear foot · $0.85</p></div>
-          <div class="catalog-sug"><h5>Ridge Cap Shingles</h5><p>Per bundle · $48.00</p></div>
-          <div class="catalog-sug"><h5>Roof Deck Nails</h5><p>Per box · $32.00</p></div>
-          <div class="catalog-sug"><h5>Starter Strip</h5><p>Per bundle · $42.00</p></div>
-          <div class="catalog-sug"><h5>Pipe Boot Flashing</h5><p>Per unit · $18.00</p></div>
-          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-default)">
-            <button class="btn-link" style="font-size:var(--smaller)" onclick="show('catalog-educated')">View full catalog</button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -1885,7 +1927,7 @@
     }
 
     document.getElementById('screen-' + id)?.classList.add('active');
-    const map = {'cover':0,'proposals-empty':1,'template-selection':3,'seeding-success':4,'proposal-builder':5,'catalog-educated':6};
+    const map = {'cover':0,'proposals-empty':1,'template-selection':3,'seeding-success':4,'catalog-educated':5};
     if (map[id] !== undefined) document.querySelectorAll('.proto-btn')[map[id]]?.classList.add('active');
     if (id !== 'cover') buildNav(id === 'catalog-educated' ? 'catalog' : 'proposals');
     if (id === 'template-selection') renderSeededTemplates();
