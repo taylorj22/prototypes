@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Perception Research Hub — Roofr</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #F5F7FC; }
+    button { font-family: inherit; }
+    select { font-family: inherit; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState } = React;
+
+const ACCENT = "#3B6FE8";
+const GREEN = "#2d8a4e";
+const ORANGE = "#E8704A";
+const AMBER = "#E8A44A";
+const PURPLE = "#8B5CF6";
+
+const EXEC_SUMMARY = {
+  headline: "The market is moving, competitors are framing AI around outcomes, and Roofr has a timing window — but only if it solves for control, not just capability.",
+  findings: [
+    { n: "01", color: ACCENT, title: "Estimates are the undisputed #1 pain point", body: "Creating estimates and proposals ranked #1 on both the most time-consuming (46%) and most repetitive (40%) task lists — the only task to top both. Every competitor has noticed. xBuild is AI-native around it. Jobber promotes a draft-to-proposal flow. AccuLynx launched Lead Intelligence. Roofr already owns proposals — this is the most defensible AI surface in the product." },
+    { n: "02", color: PURPLE, title: "Outcome framing beats feature framing in every competitor's playbook", body: "No competitor leads with 'we have AI.' They lead with: 'close the deal before you leave the driveway' (xBuild), 'see the result before anything is sent' (Hover), 'your AI crew member' (HouseCall Pro). The industry hasn't settled on a trust model yet — Roofr has a genuine opportunity to set the expectation with review-before-send as a first-class design principle." },
+    { n: "03", color: ORANGE, title: "Customer-relationship trust is the real adoption friction", body: "65% worry about inaccurate output — but that's an engaged-worrier signal (people with that concern are actually more likely to try, Δ +0.35). The concern that actually predicts not trying is 'don't trust tech with customer relationships' (Δ −0.22). This is concentrated in Worried Evaluators (41% of respondents). It's not a messaging problem — it's a UX control problem." },
+    { n: "04", color: GREEN, title: "Roofr's measurement data is an unspoken competitive asset", body: "Competitors can't build what Roofr has: proposal data tied to real measurement reports and actual closed jobs. xBuild generates proposals from language models and roofing data. Roofr can generate them from the customer's actual roof. That accuracy story hasn't been told — and it's the most direct answer to the #1 concern." },
+    { n: "05", color: AMBER, title: "xBuild is the most urgent competitive threat", body: "xBuild already ignores Roofr specifically. They're moving fast, integrating with roof report suppliers (ABC Supply, EagleView, GAF), and growing. The Proposal Builder is where they'll compete most directly — and it's where Roofr should defend first." },
+    { n: "06", color: "#555", title: "Free AI lowers the barrier significantly — HouseCall Pro is already there", body: "HouseCall Pro's Help AI is free. Jobber includes AI features. First-mover advantage in the Worried Evaluators segment belongs to whoever offers a no-cost, low-risk trial. The goal is accidental discovery — a feature that helps them without asking them to opt into it first." },
+  ],
+};
+
+const THEMES = [
+  { id: "estimates", title: "Estimates & proposals", color: ACCENT, icon: "📋", surveySignal: "#1 time-consuming AND #1 repetitive — the only task to top both lists. 46% time-consuming, 40% repetitive.", competitiveSignal: "xBuild is AI-native around it. Jobber has a draft-to-quote flow. AccuLynx launched Lead Intelligence. Hover is building toward it.", roofrAngle: "Roofr already owns proposals. The AI opportunity is drafting proposal copy from measurement data — more accurate than any competitor because the underlying data is real, not estimated.", interviewAngle: "Walk me through creating an estimate start to finish. Where does it slow down? What do you do almost exactly the same every time?", openQuestions: ["Is the pain in writing copy, pricing, formatting, or follow-up?", "How many estimates per week? How long does each take?", "Have they tried AI for this already?"] },
+  { id: "control", title: "Control & review", color: PURPLE, icon: "👁", surveySignal: "62% chose 'review before send' as #1 confidence builder. 46% want to always know when AI is involved. Customer-trust concern is the only one with a negative delta on willingness to try (Δ −0.22).", competitiveSignal: "Hover explicitly shows 'see the result' before anything is sent. ServiceTitan's Atlas is 'AI sidekick' framing — assist, don't replace. Jobber flags AI-generated content with a tag.", roofrAngle: "Review-before-send isn't just a nice-to-have — it's the single biggest trust unlock in the data. Every AI feature Roofr ships should make review the default, not an option.", interviewAngle: "If AI drafted an estimate — what would reviewing it look like for you? Is it reading it? Editing it? Just approving? How long before you'd stop reviewing every one?", openQuestions: ["What does 'review' mean in practice?", "What level of control would make them comfortable enough to try?", "Would they ever turn off review for low-stakes tasks?"] },
+  { id: "trust", title: "Accuracy & trust", color: ORANGE, icon: "🎯", surveySignal: "65% flagged inaccurate output as a concern — but it's an engaged-worrier signal, not a blocker. People with this concern are MORE likely to try (Δ +0.35).", competitiveSignal: "AccuLynx needs more context on current products. xBuild accuracy is confirmed through customer reviews and high-stakes output. Competitors rarely publish error rates.", roofrAngle: "Roofr's measurement data is the accuracy story. A proposal generated from the actual measured roof is more accurate than one generated from a language model. That's the differentiator — but it hasn't been communicated.", interviewAngle: "When you imagine AI making a mistake on an estimate — what's the mistake you're picturing? How would you catch it? If it got things right 90% of the time, is that good enough?", openQuestions: ["What's the specific mistake they're imagining?", "What does their review process look like?", "Is there an accuracy threshold below which they'd stop using it?"] },
+  { id: "admin", title: "Admin & lead gen", color: GREEN, icon: "📬", surveySignal: "Admin ranked #2 on both time-consuming and repetitive lists. Lead gen is #3 on time-consuming, #2 on repetitive. Both appear consistently across all company sizes.", competitiveSignal: "HouseCall Pro's AI Receptionist handles inbound calls 24/7. Jobber promotes AI for follow-ups and no-show prevention. JobNimbus Scout handles field admin by voice.", roofrAngle: "Lead gen follow-up is a natural AI play for Roofr CRM. The survey data shows 47 respondents already use AI for lead gen in their business — the workflow exists, they just haven't connected it to Roofr.", interviewAngle: "What happens when a lead comes in after hours? How do you follow up — manually, automated, or a mix? What slips through?", openQuestions: ["Do they use any automation for follow-up today?", "What's their biggest admin time sink?", "Would they trust AI to respond to a lead on their behalf?"] },
+  { id: "positioning", title: "AI framing & language", color: AMBER, icon: "💬", surveySignal: "57% don't use AI in their business. But only 16% describe it as 'not relevant.' The majority are in an exploratory middle. Language matters — 'tool' vs 'agent' vs 'assistant' will land differently.", competitiveSignal: "HouseCall Pro: 'AI crew member.' Jobber: 'AI sidekick.' xBuild: outcome-led, no AI label. ServiceTitan: 'Titan Intelligence.' Most successful framing is functional, not hype.", roofrAngle: "Roofr's framing should be roofing-specific and modest. Not 'AI-powered platform.' Something like: 'handles the parts you do the same way every time.'", interviewAngle: "When you hear 'AI feature' in software — what do you picture? Is there a word or phrase that would make you more or less likely to try something?", openQuestions: ["How do they describe AI to themselves?", "Does 'AI' feel more like a benefit or a risk to them?", "What language would make a new feature feel safe to try?"] },
+];
+
+const SEGMENTS = [
+  { name: "Active Adopters", n: 107, pct: 39, color: GREEN, bg: "#edf7f1", border: "#a3d9b5", emoji: "🚀", tagline: "High comfort, actively using AI across their business software stack, positive outlook on AI in roofing.", stats: [{ label: "Willingness", value: "3.92 / 5" }, { label: "Comfort", value: "3.91 / 5" }, { label: "AI in biz software", value: "84%" }, { label: "Interview opt-in", value: "79%" }], concerns: "Accuracy is their #1 concern at 83% — but this reflects high standards and engagement, not hesitation. They're the most engaged worriers, not the most blocked.", confidence: "Review before send (74%), low-stakes task first (42%), free trial (32%).", interviewGoal: "Understand the ceiling. Where has AI let them down? What review or control do they need before trusting AI to act for them? What do they wish Roofr could do that ChatGPT can't?", target: "5–8 interviews", topPain: "Estimates/proposals (50%), Lead gen & follow-up (44%), Team/subs management (30%)", demographics: "6–15 person teams (39%), 2–5 people (37%), Solo (11%) · Owner/founder (66%) · Mixed retail + insurance (57%)", questions: ["Where has AI let you down, and what did you do about it?", "What review or control do you need before you trust AI to act for you?", "Walk me through an estimate — which parts could AI have helped with?", "Is there anything you wish Roofr specifically could do that ChatGPT can't?"] },
+  { name: "Overwhelmed Curious", n: 37, pct: 14, color: GREEN, bg: "#edf7f1", border: "#a3d9b5", emoji: "⏰", tagline: "Open to AI, low comfort, blocked by learning curve — but willingness to try is above average.", stats: [{ label: "Willingness", value: "3.72 / 5" }, { label: "Comfort", value: "2.43 / 5" }, { label: "AI in biz software", value: "32%" }, { label: "Interview opt-in", value: "64%" }], concerns: "Don't have time to learn (100%) is the defining feature. Inaccuracy (49%) and customer trust (35%) follow — but willingness stays above neutral despite all three.", confidence: "Review before send (58%), low-stakes task first (44% — highest of any segment), free trial (36%).", interviewGoal: "The highest-potential conversion segment for well-designed onboarding. Understand what 'easy on-ramp' looks like — the open door is already there.", target: "4–6 interviews", topPain: "Estimates/proposals (46%), Lead gen & follow-up (32%), Insurance/supplements (32%)", demographics: "2–5 people (49%), Solo (30%) · Owner/founder (86%) · Retail-heavy (89%)", questions: ["You use AI personally but not in the business — what's stopping the jump?", "If a roofing tool did the thing you use ChatGPT for, would you trust it more or less than ChatGPT? Why?", "What would make trying something new feel low-risk enough to actually do it?", "Walk me through creating an estimate — if there was a 'draft for me' button, would you use it?"] },
+  { name: "Cautious Holdbacks", n: 104, pct: 38, color: AMBER, bg: "#FEF7EC", border: "#f5cf8a", emoji: "⚖️", tagline: "Low comfort, low AI usage, held back by specific trust concerns — accuracy and customer-facing risk.", stats: [{ label: "Willingness", value: "2.90 / 5" }, { label: "Comfort", value: "2.44 / 5" }, { label: "AI in biz software", value: "10%" }, { label: "Interview opt-in", value: "61%" }], concerns: "Accuracy (64%) and customer trust (59%) together define this cluster — it's active distrust, not apathy. Customer trust concern is the only one that meaningfully lowers willingness (Δ −0.35).", confidence: "Review before send (52%), low-stakes task first (37%), free trial (34%). Social proof (14%) matters more here than any other segment.", interviewGoal: "The largest group and most important for adoption growth. Understand the specific shape of their distrust — is it about making a mistake, or about the customer finding out AI was involved?", target: "5–8 interviews", topPain: "Estimates/proposals (52%), Admin/data entry (36%), Team/subs management (34%)", demographics: "2–5 people (38%), Solo (20%) · Owner/founder (49%) · Mixed or retail (81%)", questions: ["Which parts of the customer relationship feel off-limits to automation — and why?", "Unpack 'inaccurate output' for me — is the fear a one-off error, or not being able to catch it before it reaches a customer?", "What would AI have to prove before you'd even try it?", "What would it look like if AI got something wrong with a customer? Walk me through that scenario."] },
+  { name: "Passive Bystanders", n: 26, pct: 9, color: PURPLE, bg: "#f3f0fc", border: "#c4b5f5", emoji: "😐", tagline: "No concerns about AI, moderate willingness, but not actively adopting — barrier is salience, not fear.", stats: [{ label: "Willingness", value: "3.52 / 5" }, { label: "Comfort", value: "2.88 / 5" }, { label: "AI in biz software", value: "31%" }, { label: "Interview opt-in", value: "60%" }], concerns: "Zero concerns — 100% report no concerns about AI. But adoption is still low. The barrier is absence of a reason to engage, not the presence of fear.", confidence: "Review before send (52%), free trial (35%). Removing concerns won't move this group — making AI feel necessary to their specific work will.", interviewGoal: "Treat as directional (n=26). Understand whether they're unreachable or just haven't had the right hook. Relevance and salience are the levers, not trust.", target: "2–3 interviews (directional only)", topPain: "Estimates/proposals (48%), Admin/data entry (28%), Lead gen & follow-up (28%)", demographics: "2–5 people (58%), 6–15 (23%) · Owner/founder (69%) · Retail-only (65%)", questions: ["What software features have you turned on in the last year — and what made you try them?", "If a feature just worked automatically and saved you 20 minutes — would you care how it did it?", "Is there any version of AI in roofing software that would feel useful to your specific work?", "What would AI have to do to feel relevant to the way you actually run your business?"] },
+];
+
+const GEO = {
+  usn: 257, can: 66,
+  findings: [
+    { title: "Canada has higher biz AI adoption — and more disinterest", us: "0.9 biz areas · 18% not interested", ca: "1.3 biz areas · 22% not interested", detail: "More bimodal distribution — fewer people in the uncertain middle. The cautious majority is smaller in Canada, and both extremes are larger." },
+    { title: "Canadians are more willing to try despite lower comfort", us: "Comfort 3.08 · Likelihood 3.41", ca: "Comfort 2.98 · Likelihood 3.68", detail: "Canadians adopt tools for business necessity even without high personal enthusiasm. The path in may be functional ('saves you time') rather than experiential ('see how it works')." },
+    { title: "Canadian top pain: admin, not team management", us: "Estimates 40%, Lead gen 29%, Team mgmt 26%", ca: "Estimates 53%, Admin 35%, Lead gen 32%", detail: "Team coordination pain doesn't make Canada's top 5 — likely smaller team sizes and less subcontracting. Admin automation may resonate more strongly in Canadian messaging." },
+    { title: "Canadian view: pragmatic, less bullish", us: "25% 'major opportunity'", ca: "18% 'major opportunity' · 42% 'useful tool'", detail: "Less hype, more utility framing. 'AI that handles the repetitive parts' will land better than 'AI-powered transformation' for Canadian contractors." },
+  ],
+  interviewNote: "Aim for 3–4 Canadian respondents across segments. Ask: how does running a roofing business in Canada differ — are there regulatory, insurance, or seasonal factors that affect how you'd use AI?",
+};
+
+const SIZE_TIERS = [
+  { label: "Solo/Micro (1–5)", n: 165, color: PURPLE, comfort: "2.97", likelihood: "3.38", bizAI: "1.0 areas", topPain: "Estimates (46%), Lead gen (34%), Admin (31%)", keyInsight: "Cost-sensitive (22% cite cost). Free trial matters most here. Pain is owner-level — estimates and leads, not team coordination.", interviewNote: "How do you win new work? What does a stretched week look like? Would drafted estimates save real time?" },
+  { label: "Small Teams (6–15)", n: 83, color: ACCENT, comfort: "3.20", likelihood: "3.58", bizAI: "1.4 areas", topPain: "Estimates (53%), Team mgmt (35%), Scheduling (31%)", keyInsight: "Highest readiness of any size tier. Most likely to use AI regularly (32%). Team coordination pain is unique to this group — the sweet spot for adoption.", interviewNote: "How do you coordinate across your team? Where does information fall through? What breaks at capacity?" },
+  { label: "Mid+ (16+ people)", n: 37, color: ORANGE, comfort: "3.15", likelihood: "3.65", bizAI: "0.9 areas", topPain: "Estimates (51%), Lead gen (41%), Team mgmt (27%)", keyInsight: "Privacy concern jumps to 38% (vs 19% for Solo/Micro). Customer-trust concern highest at 46%. Higher-value relationships = higher stakes for AI mistakes. Social proof has zero uptake — they decide independently.", interviewNote: "Who decides whether to enable an AI feature — you or someone else? What would a data privacy concern look like for your business?" },
+];
+
+const COMPETITIVE = [
+  { name: "Hover", type: "Direct", color: ACCENT, aiFeatures: "AI-powered 3D models and visualizations from photos. Measurement-to-estimate flow. AI embeddings in existing workflows.", positioning: "See the result. Visual proof before commitment.", trustMechanism: "Front and centre — 'see the result' is the core trust pattern. Highest homeowner acceptance rate.", gap: "Complex/dated user interface. AI embedded but not announced loudly.", roofrImplication: "Visual proof before commitment is Roofr's natural territory. Hover has established the pattern — Roofr needs to own it for proposals." },
+  { name: "AccuLynx", type: "Direct", color: GREEN, aiFeatures: "Lead Intelligence feature (Jan 2026). Predictive lead scoring from demographic, financial, and project-based data. Assigns lead score and recommended action.", positioning: "Roofing-specific AI. Lead scoring as the entry point.", trustMechanism: "Subtle — AI embedded in existing workflows, not announced. Understated.", gap: "Needs more info on current products. 'A lot of AI happening behind the scenes but not talking about it explicitly on their marketing website.'", roofrImplication: "AccuLynx is building toward the same CRM intelligence Roofr already has. Speed matters here." },
+  { name: "JobNimbus", type: "Direct", color: AMBER, aiFeatures: "Assist AI (mobile) — text + voice assistant for new contacts, inbound calls, basic tasks. Scout — mobile AI for field admin by voice. Marketed as 'no texting, no texting on the roof.'", positioning: "AI for contractors in the field. Mobile-first, hands-free.", trustMechanism: "The automation is the trust mechanism — answering the customer through the construction journey.", gap: "Help articles for Assist AI show how similar it is to Roofr voice-handling. 'A few Facebook posts promoting Scout — hard to find much more on their current products.'", roofrImplication: "Field-friendly voice AI is a gap Roofr hasn't addressed. Worth asking in interviews how much field vs office work shapes their AI expectations." },
+  { name: "xBuild", type: "AI Native", color: ORANGE, aiFeatures: "AI-native proposal generation from natural language. 10,000+ proposals completed. Integrates with ABC Supply, EagleView, GAF. AI-generated estimates, signature, Stripe payments.", positioning: "Close the deal before you leave the driveway. Speed and outcome.", trustMechanism: "Outcome framing — 'close the deal.' Accuracy confirmed through reviews and high-stakes output.", gap: "No CRM. No measurement data of their own — depends on integrations. Chat-based interface looks generic.", roofrImplication: "xBuild is ignoring Roofr specifically. They're the most urgent competitive threat — and the Proposal Builder is the battleground." },
+  { name: "Jobber", type: "Indirect", color: "#6B9EF5", aiFeatures: "Quote drafting from voice or text. AI-assisted proposals. Follow-up automation. No-show prevention. AI flags generated content with a tag. 'Draft for me' button.", positioning: "AI that handles repetitive tasks. 'Let Jobber handle repetitive tasks.'", trustMechanism: "Middle of pack — not super obvious, not super hidden. Homeowner's own house is the trust visual.", gap: "Numerous marketing pages promoting AI but not clearly differentiating what is and isn't AI. 'They tie it into automations, not really differentiating what is AI and what is not.'", roofrImplication: "Jobber's 'Draft for me' framing for proposals is exactly the pattern Roofr should study. The tag on AI-generated content is the right transparency signal." },
+  { name: "HouseCall Pro", type: "Indirect", color: PURPLE, aiFeatures: "CSR AI (answers every call 24/7, books appointments). Analyst AI (reviews job trends, cash flow insights). Marketing AI (campaigns, descriptions, review responses). Help AI is free.", positioning: "Your AI crew. AI as a team member doing real tasks.", trustMechanism: "Uses brand name, not just 'AI.' CSR AI is the front door — framed as a full-time hire you don't pay.", gap: "Find out if customers use it and what they think. 'We've heard good things — but unclear if it's actually sticking.'", roofrImplication: "Free AI (Help AI) lowers the barrier for first interactions. The accidental discovery pattern — helps them without asking them to opt in — is the model to follow." },
+  { name: "ServiceTitan", type: "Indirect", color: "#555", aiFeatures: "Titan Intelligence (broader concept). Atlas AI Sidekick — converse in plain English, get instant insights, automated workflows. AI ad optimizer. AI dispatcher.", positioning: "AI for the trades — enterprise scale. ROI metrics front and centre.", trustMechanism: "Consistently shows stats for ROI. Titan Intelligence as the umbrella brand.", gap: "Main feature page doesn't emphasise AI but dedicated AI feature pages exist. Doesn't lead with AI but sprinkles it in.", roofrImplication: "ServiceTitan's scale means their AI framing will influence expectations for the whole industry. Watch their Atlas positioning closely." },
+];
+
+const INTERVIEW_THEMES = [
+  { priority: "P1", title: "What does 'AI handling customer relationships' actually mean to them?", why: "Customer-relationship trust is the only concern that predicts lower willingness to try AI (Δ −0.22). It affects 46% of Worried Evaluators but only 22% of Active Adopters. The survey can't tell us what's underneath it.", questions: ["When you imagine software handling a task automatically — what's the specific moment that makes you uncomfortable?", "Is it about the customer knowing AI was involved, or about you not being in control of what gets sent?", "Are there tasks where you'd be fine with AI acting on your behalf vs. ones where you'd always want to approve first?", "Has a tool ever done something automatically that you wished it hadn't? What happened?"], hypothesis: "We suspect 'customer relationships' is a proxy for loss-of-control, not a specific distrust of AI. If true, the fix is review-before-send UX — not messaging about trustworthiness.", segments: ["Worried Evaluators", "Passive Bystanders"], color: ORANGE },
+  { priority: "P1", title: "What would it actually take to move a Worried Evaluator off the fence?", why: "Worried Evaluators are the largest segment at 41%. They have average comfort ~2.8/5 and mean likelihood ~3.3/5. The survey tells us 'review before send' and 'free trial' are confidence builders, but not what the actual moment of conversion looks like.", questions: ["Walk me through the last time you tried a new feature or tool in your business. What made you actually try it?", "If Roofr added an AI feature tomorrow, what would you need to see before you turned it on?", "Is there a task you'd be willing to let AI handle if it showed you the output first — even just once?", "What would make you trust it enough to stop reviewing every output?"], hypothesis: "Activation is task-specific and comfort-dependent. The first win needs to be nearly zero-risk (read-only, reversible, invisible to the customer) to get them over the threshold.", segments: ["Worried Evaluators"], color: ACCENT },
+  { priority: "P1", title: "Estimates and proposals: what specifically is painful?", why: "#1 on both time-consuming (46%) and repetitive (40%) task lists. The only task to top both. But the survey doesn't tell us whether the pain is in measurement, writing copy, pricing, formatting, or follow-up.", questions: ["Walk me through how you create an estimate from start to finish. Where does it slow down?", "What's the part you do almost exactly the same way every time?", "If you could only automate one step of that process, which would it be?", "Have you ever used any tool — AI or not — to speed up estimates? What happened?", "How many estimates do you send in a week? How long does each take?"], hypothesis: "The pain is likely in writing and formatting, not measurement. If so, AI-generated proposal copy with review-before-send is the obvious first feature.", segments: ["All segments", "Especially Solo/Micro"], color: GREEN },
+  { priority: "P2", title: "What do Active Adopters actually use AI for day-to-day?", why: "Active Adopters use AI across 2.7 business areas on average with comfort 4.0/5. Open-text responses show marketing, social media, email, and research. We need to understand their actual workflow to design for what comes next.", questions: ["What does a day where you use AI look like? What triggers you to open it?", "What's the most useful thing AI has done for your business in the last month?", "What have you tried that didn't work — or stopped being useful?", "Is there anything you wish Roofr specifically could do with AI that no other tool does?", "One respondent said they've built a custom CRM backed by Gemini. How close are you to that kind of investment?"], hypothesis: "Active Adopters have already solved their own pain points with general tools. They'll adopt Roofr AI if it's more contextually accurate than ChatGPT — and will leave if it isn't.", segments: ["Active Adopters"], color: GREEN },
+  { priority: "P2", title: "Insurance vs. retail: does the AI opportunity look different?", why: "Insurance users have slightly higher comfort (3.14 vs 2.96) and likelihood (3.50 vs 3.44). 'Managing insurance claims or supplements' ranked #4 on both time-consuming and repetitive lists. But it's unclear whether insurance contractors see AI as a help or a compliance risk.", questions: ["How much of your time goes into claims documentation vs. the actual roofing work?", "Have you ever used AI or software to help with a claim or supplement? How did it go?", "Would you trust AI-generated content in a claim document? Why or why not?", "What would insurers think if they knew AI helped write a supplement?"], hypothesis: "Insurance contractors may be a higher-trust segment for AI documentation features — or they may have compliance reasons to avoid it. The survey can't tell us which.", segments: ["Insurance users", "Mid+ companies"], color: PURPLE },
+  { priority: "P2", title: "What does 'accuracy' actually mean to them — and how would they verify it?", why: "65% flagged inaccurate output as a concern. But it's an engaged-worrier signal — people with this concern are actually MORE likely to try AI (Δ +0.35). We need to understand what 'accurate' means in context.", questions: ["When you imagine AI making a mistake on an estimate — what's the mistake you're picturing?", "How would you catch that mistake? What would your review process look like?", "Have you ever caught a software error that cost you money or caused a customer problem? What happened?", "If AI got estimates right 90% of the time, would that be good enough? What about 95%? 99%?"], hypothesis: "The accuracy threshold varies dramatically by task. A pricing error has high stakes; a misworded email has low stakes. Understanding where those lines are helps prioritise which features to ship first.", segments: ["All segments"], color: AMBER },
+];
+
+const INTERVIEW_GAPS = [
+  { title: "We don't know what 'review before send' means in practice", detail: "200 respondents (62%) chose it as #1 confidence builder. But is reviewing: reading? Editing? Approve/reject? How long before they'd stop reviewing every output?", impact: "Can't design the review UX without knowing what it needs to feel like.", fix: "Show mockups with different review flows. What level of control feels right for different task types?", type: "design-gap" },
+  { title: "Marketing and social media AI use is invisible in the survey", detail: "Q9 didn't list marketing, social media, or email — but 8+ free-text responses mention them unprompted.", impact: "We may be underestimating current AI adoption and missing a whole workflow category.", fix: "Ask specifically: do you use AI for anything marketing-related? Show me what that looks like.", type: "coverage-gap" },
+  { title: "One respondent already built a custom AI-backed CRM", detail: "Free text: 'We've built a custom CRM backed with Gemini and we're steadily improving and investing in the tech.' This person opted in to interviews.", impact: "An extreme Active Adopter — could reveal where Roofr needs to be in 18 months.", fix: "Find this respondent. Ask about their build vs buy decision and what they wish Roofr did instead.", type: "signal" },
+  { title: "We don't know what 'not relevant to my work' actually means", detail: "24 respondents (8%) said AI is not relevant. The survey doesn't tell us if this is a genuine mismatch, surface-level dismissal, or a proxy for distrust.", impact: "These 24 people are either truly unreachable or need a different activation path. We don't know which.", fix: "Interview 2–3. Ask: what does a typical day look like? What would have to be true for AI to be useful?", type: "coverage-gap" },
+  { title: "Hard-line skeptic sentiment isn't quantified", detail: "Open text includes: 'There is no task I would willingly hand to an AI agent.' We don't know how many share this.", impact: "If it's 5% it's manageable. If it's 20%, messaging and feature design need to be more defensive.", fix: "In interviews with low-likelihood respondents: is there any version of AI in roofing software that would be useful?", type: "signal" },
+];
+
+const RAW_CANDIDATES = [
+  { email:"john.tatum@abcsupply.com", state:"USA (national)", role:"Sales rep", size:"More than 100", aiUseBiz:"None", aiUseExt:"No, but open", comfort:2, view:"useful tool" },
+  { email:"mwvest@gmail.com", state:"Alabama", role:"Sales manager", size:"Just me", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:1, view:"not relevant" },
+  { email:"fthorn@roofmaxx.com", state:"California", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, regularly", comfort:3, view:"useful tool" },
+  { email:"roofing365conroe@gmail.com", state:"Texas", role:"Owner", size:"Just me", aiUseBiz:"Estimates/Admin", aiUseExt:"No, but open", comfort:3, view:"major opportunity" },
+  { email:"nelsonlocalroofer@gmail.com", state:"California", role:"Owner", size:"6-15", aiUseBiz:"Estimates", aiUseExt:"Yes, tried a few", comfort:5, view:"major opportunity" },
+  { email:"gimosreno@gmail.com", state:"Florida", role:"Owner", size:"6-15", aiUseBiz:"Lead gen", aiUseExt:"Yes, regularly", comfort:4, view:"major opportunity" },
+  { email:"javierfranco1981@gmail.com", state:"Indiana", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:1, view:"not sure" },
+  { email:"dlehr@roofmaxx.com", state:"Pennsylvania", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"No, but open", comfort:2, view:"not sure" },
+  { email:"laptiteroofing@gmail.com", state:"Florida", role:"Owner", size:"16-50", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"useful tool" },
+  { email:"chrisl@tidewaterroofing.com", state:"Virginia", role:"Estimator", size:"16-50", aiUseBiz:"Estimates/Comms/Admin", aiUseExt:"Yes, regularly", comfort:5, view:"useful tool" },
+  { email:"adejura@claimpros.com", state:"Florida", role:"Owner", size:"Just me", aiUseBiz:"Lead gen/Comms", aiUseExt:"Yes, tried a few", comfort:4, view:"useful tool" },
+  { email:"jacob@rcfroof.com", state:"Georgia", role:"Owner", size:"2-5", aiUseBiz:"Research", aiUseExt:"Yes, regularly", comfort:4, view:"useful tool" },
+  { email:"dick@meridianexteriors.com", state:"Colorado", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not sure" },
+  { email:"mapproofing@gmail.com", state:"Georgia", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not relevant" },
+  { email:"rayestroof@gmail.com", state:"Ohio", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:3, view:"not sure" },
+  { email:"eagleroofing247@gmail.com", state:"Alabama", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"not sure" },
+  { email:"rs@trulyroofing.com", state:"Texas", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"major opportunity" },
+  { email:"mzubek@plaind.com", state:"Ohio", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not sure" },
+  { email:"mark@edwardsroofing.ca", state:"Ontario", role:"Owner", size:"2-5", aiUseBiz:"Lead gen", aiUseExt:"No, but open", comfort:3, view:"useful tool" },
+  { email:"t.jordan@metalroofexperts.ca", state:"Ontario", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:2, view:"not sure" },
+  { email:"chris@weaverconstructionusa.com", state:"Colorado", role:"Owner", size:"6-15", aiUseBiz:"All areas", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"wes@roofsw.com", state:"West Virginia", role:"Owner", size:"6-15", aiUseBiz:"Lead gen/Claims", aiUseExt:"Yes, regularly", comfort:5, view:"useful tool" },
+  { email:"travis@rainydaytx.com", state:"Texas", role:"Owner", size:"2-5", aiUseBiz:"Lead gen/Marketing", aiUseExt:"Yes, regularly", comfort:4, view:"major opportunity" },
+  { email:"comptabilitetoituremg2@gmail.com", state:"Quebec", role:"Owner", size:"2-5", aiUseBiz:"Lead gen", aiUseExt:"Yes, regularly", comfort:5, view:"useful tool" },
+  { email:"mcnally@gmail.com", state:"North Carolina", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"No, but open", comfort:4, view:"useful tool" },
+  { email:"info@gnhroofing.ca", state:"Alberta", role:"Owner", size:"16-50", aiUseBiz:"Emails", aiUseExt:"Yes, regularly", comfort:4, view:"not sure" },
+  { email:"ed@jnr-roofing.com", state:"Michigan", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"major opportunity" },
+  { email:"mike.reliable1@gmail.com", state:"Illinois", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"No, but open", comfort:1, view:"not sure" },
+  { email:"office@reyesroofingllc.com", state:"Arizona", role:"Office admin", size:"6-15", aiUseBiz:"None", aiUseExt:"No, but open", comfort:1, view:"not sure" },
+  { email:"megan@rooferchicks.com", state:"Texas", role:"Sales manager", size:"6-15", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"useful tool" },
+  { email:"mayer@theroofingsolution.com", state:"New Jersey", role:"Owner", size:"2-5", aiUseBiz:"Admin", aiUseExt:"Yes, regularly", comfort:5, view:"useful tool" },
+  { email:"jbowerroofing@gmail.com", state:"Ontario", role:"Owner", size:"6-15", aiUseBiz:"None", aiUseExt:"Tried, stopped", comfort:3, view:"not sure" },
+  { email:"admin@thcexteriors.com", state:"Pennsylvania", role:"Office admin", size:"6-15", aiUseBiz:"Lead gen/Claims/Admin", aiUseExt:"Yes, regularly", comfort:4, view:"major opportunity" },
+  { email:"cabra.kay@gmail.com", state:"Texas", role:"Owner", size:"6-15", aiUseBiz:"Marketing", aiUseExt:"Yes, tried a few", comfort:3, view:"not sure" },
+  { email:"cbrandt@targetrr.com", state:"Texas", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"major opportunity" },
+  { email:"cwhite@yerocfinancial.com", state:"Illinois", role:"Owner", size:"6-15", aiUseBiz:"Lead gen", aiUseExt:"Yes, tried a few", comfort:2, view:"not sure" },
+  { email:"riley@friestallman.com", state:"Saskatchewan", role:"Production manager", size:"Just me", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"useful tool" },
+  { email:"sales@lmconstructionatl.com", state:"Georgia", role:"Sales manager", size:"2-5", aiUseBiz:"Estimates/Admin", aiUseExt:"Yes, regularly", comfort:4, view:"major opportunity" },
+  { email:"foxconstruction.nv@gmail.com", state:"Nevada", role:"Owner", size:"2-5", aiUseBiz:"Lead gen/Estimates", aiUseExt:"Yes, regularly", comfort:4, view:"major opportunity" },
+  { email:"info@greenshieldroofs.com", state:"Texas", role:"Owner", size:"16-50", aiUseBiz:"None", aiUseExt:"Yes, regularly", comfort:2, view:"useful tool" },
+  { email:"info@risnerroofing.com", state:"Texas", role:"Owner", size:"6-15", aiUseBiz:"Customer comms", aiUseExt:"Yes, regularly", comfort:3, view:"major opportunity" },
+  { email:"felix@allarearoofinginc.com", state:"Florida", role:"Sales manager", size:"16-50", aiUseBiz:"None", aiUseExt:"Yes, regularly", comfort:4, view:"major opportunity" },
+  { email:"office@eliteroofingsystemsga.com", state:"Georgia", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:4, view:"useful tool" },
+  { email:"jeff@jtiroofing.com", state:"Florida", role:"Sales rep", size:"6-15", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"useful tool" },
+  { email:"dennis@qcaroofing.com", state:"Illinois", role:"Sales manager", size:"6-15", aiUseBiz:"Lead gen", aiUseExt:"Yes, tried a few", comfort:3, view:"major opportunity" },
+  { email:"beric@bassroof.com", state:"Texas", role:"Sales manager", size:"6-15", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:2, view:"not sure" },
+  { email:"sales@btxeriors.com", state:"Texas", role:"Owner", size:"6-15", aiUseBiz:"Lead gen/Estimates/Admin", aiUseExt:"Yes, regularly", comfort:4, view:"major opportunity" },
+  { email:"roofing1@comcast.net", state:"New Jersey", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:1, view:"not relevant" },
+  { email:"carlos@nergroup.ca", state:"Ontario", role:"Project manager", size:"6-15", aiUseBiz:"All areas", aiUseExt:"Yes, regularly", comfort:5, view:"useful tool" },
+  { email:"info@ebenezerroofing.ca", state:"Alberta", role:"Owner", size:"6-15", aiUseBiz:"Estimates", aiUseExt:"Yes, regularly", comfort:4, view:"useful tool" },
+  { email:"roofproplus@yahoo.ca", state:"Ontario", role:"Owner", size:"6-15", aiUseBiz:"Customer comms", aiUseExt:"Yes, regularly", comfort:2, view:"not sure" },
+  { email:"pgregory@tdjdallas.com", state:"Texas", role:"Office admin", size:"6-15", aiUseBiz:"Comms/Team mgmt", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"howie@brighttoproofing.com", state:"Texas", role:"Owner", size:"Just me", aiUseBiz:"Claims", aiUseExt:"Yes, tried a few", comfort:5, view:"major opportunity" },
+  { email:"c.kurceba8649@gmail.com", state:"Pennsylvania", role:"Owner", size:"Just me", aiUseBiz:"Scheduling/Admin", aiUseExt:"Yes, tried a few", comfort:2, view:"not sure" },
+  { email:"reconrestorationsmoyer@gmail.com", state:"Missouri", role:"Owner", size:"6-15", aiUseBiz:"Lead gen/Team/Admin", aiUseExt:"Yes, tried a few", comfort:5, view:"useful tool" },
+  { email:"amanda@oakwoodroofers.com", state:"Texas", role:"Production manager", size:"2-5", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not sure" },
+  { email:"allen@greenrhino.build", state:"Pennsylvania", role:"Owner", size:"2-5", aiUseBiz:"Estimates", aiUseExt:"Yes, tried a few", comfort:3, view:"major opportunity" },
+  { email:"toptobottomroofing@shaw.ca", state:"Alberta", role:"Office admin", size:"6-15", aiUseBiz:"Estimates", aiUseExt:"Yes, tried a few", comfort:2, view:"major opportunity" },
+  { email:"dianas.dimar@gmail.com", state:"Michigan", role:"Owner", size:"6-15", aiUseBiz:"Lead gen", aiUseExt:"Yes, tried a few", comfort:2, view:"not sure" },
+  { email:"kima@happyhomeroofs.com", state:"Maryland", role:"Office admin", size:"6-15", aiUseBiz:"Social media", aiUseExt:"Yes, tried a few", comfort:2, view:"not sure" },
+  { email:"evan@apexroofingky.com", state:"Kentucky", role:"Project manager", size:"Just me", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:4, view:"useful tool" },
+  { email:"josh@lifetimeroofingmi.com", state:"Michigan", role:"Owner", size:"6-15", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"useful tool" },
+  { email:"kaela.edlund@abcsupply.com", state:"Georgia", role:"Sales rep", size:"More than 100", aiUseBiz:"Implementing", aiUseExt:"No, but open", comfort:2, view:"major opportunity" },
+  { email:"dave@roofdoctor.ca", state:"British Columbia", role:"Other", size:"16-50", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"not sure" },
+  { email:"info@olympicroofing.ca", state:"British Columbia", role:"Office admin", size:"16-50", aiUseBiz:"None", aiUseExt:"Tried, stopped", comfort:2, view:"useful tool" },
+  { email:"jgilmore@t-jroofing.com", state:"Michigan", role:"Owner", size:"6-15", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not sure" },
+  { email:"abbey@parkheightsroofing.com", state:"Maryland", role:"Office admin", size:"6-15", aiUseBiz:"All areas", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"mrhill@boiseroofrepair.co", state:"Idaho", role:"Owner", size:"6-15", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:5, view:"major opportunity" },
+  { email:"tyler@seipproofing.com", state:"Maryland", role:"Owner", size:"2-5", aiUseBiz:"Lead gen/Admin", aiUseExt:"Yes, regularly", comfort:4, view:"major opportunity" },
+  { email:"william@renegaderoofingco.com", state:"Florida", role:"Owner", size:"2-5", aiUseBiz:"Admin", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"dan_anema@hotmail.com", state:"Alberta", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"useful tool" },
+  { email:"fodllc@yahoo.com", state:"Wisconsin", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"major opportunity" },
+  { email:"szottsdfw@gmail.com", state:"Texas", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"not sure" },
+  { email:"juanariza@onelegacyunited.com", state:"Texas", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:5, view:"useful tool" },
+  { email:"vreelandroofingcorp@gmail.com", state:"Florida", role:"Office admin", size:"6-15", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not sure" },
+  { email:"bradherreid@gmail.com", state:"Minnesota", role:"Sales manager", size:"6-15", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"useful tool" },
+  { email:"sburns@gravityroof.com", state:"Florida", role:"Sales manager", size:"6-15", aiUseBiz:"None", aiUseExt:"No, but open", comfort:2, view:"not sure" },
+  { email:"bdaun@badgerroof.com", state:"Wisconsin", role:"Owner", size:"2-5", aiUseBiz:"Estimates/Team", aiUseExt:"Yes, regularly", comfort:3, view:"major opportunity" },
+  { email:"diana@tigerroofingpros.com", state:"Georgia", role:"Office admin", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"ivandpam@gmail.com", state:"Florida", role:"Sales rep", size:"Just me", aiUseBiz:"Estimates", aiUseExt:"No, but open", comfort:5, view:"major opportunity" },
+  { email:"kr@aewisc.com", state:"Wisconsin", role:"Sales rep", size:"2-5", aiUseBiz:"Lead gen/Comms/Admin", aiUseExt:"Yes, regularly", comfort:4, view:"useful tool" },
+  { email:"construction@503pro.com", state:"Tennessee", role:"Owner", size:"2-5", aiUseBiz:"Estimates/Comms/Admin", aiUseExt:"Yes, regularly", comfort:5, view:"useful tool" },
+  { email:"builtdifferentbros@gmail.com", state:"Alberta", role:"Owner", size:"2-5", aiUseBiz:"All areas", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"jasonwwest3@gmail.com", state:"Texas", role:"Other", size:"Just me", aiUseBiz:"Basic knowledge", aiUseExt:"Yes, tried a few", comfort:1, view:"not sure" },
+  { email:"info@dogwoodroofing.com", state:"Georgia", role:"Owner", size:"2-5", aiUseBiz:"Estimates", aiUseExt:"Yes, regularly", comfort:5, view:"useful tool" },
+  { email:"allstardoesroofs@gmail.com", state:"Louisiana", role:"Owner", size:"2-5", aiUseBiz:"Lead gen", aiUseExt:"Yes, regularly", comfort:4, view:"useful tool" },
+  { email:"prspradlin@gmail.com", state:"Alabama", role:"Owner", size:"2-5", aiUseBiz:"Estimates", aiUseExt:"Yes, tried a few", comfort:3, view:"not sure" },
+  { email:"jessica@indyroofrangers.com", state:"Indiana", role:"Office admin", size:"2-5", aiUseBiz:"Estimates/Comms/Claims/Admin", aiUseExt:"Yes, regularly", comfort:4, view:"major opportunity" },
+  { email:"mark@allcoveredroof.com", state:"Texas", role:"Owner", size:"2-5", aiUseBiz:"Lead gen", aiUseExt:"Yes, tried a few", comfort:3, view:"major opportunity" },
+  { email:"derrick@agassizroofing.com", state:"Manitoba", role:"Owner", size:"2-5", aiUseBiz:"Admin", aiUseExt:"Yes, regularly", comfort:4, view:"useful tool" },
+  { email:"lifelineroofingsystems@gmail.com", state:"Texas", role:"Owner", size:"2-5", aiUseBiz:"Ideas/proposals", aiUseExt:"Yes, regularly", comfort:3, view:"useful tool" },
+  { email:"kris.statewide@gmail.com", state:"Oklahoma", role:"Sales rep", size:"16-50", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"major opportunity" },
+  { email:"info@excelroofing.ca", state:"British Columbia", role:"Office admin", size:"2-5", aiUseBiz:"All areas", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"garyr@eustisroofing.com", state:"Florida", role:"Sales manager", size:"51-100", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:3, view:"not sure" },
+  { email:"linda.rapidroofing@gmail.com", state:"Alberta", role:"Office admin", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:1, view:"not sure" },
+  { email:"tello26@gmail.com", state:"Florida", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"No, but open", comfort:2, view:"useful tool" },
+  { email:"jordon@millerpropertypa.com", state:"Pennsylvania", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"No, but open", comfort:2, view:"not sure" },
+  { email:"bill@fusionpa.net", state:"Texas", role:"Owner", size:"6-15", aiUseBiz:"Customer comms", aiUseExt:"No, but open", comfort:2, view:"major opportunity" },
+  { email:"brendabcg@capitolroof.com", state:"Nevada", role:"Office admin", size:"6-15", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:1, view:"not relevant" },
+  { email:"flint@sherriffgoslin.com", state:"Michigan", role:"Office admin", size:"6-15", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"not sure" },
+  { email:"info@professionalroofinginc.com", state:"Florida", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:3, view:"major opportunity" },
+  { email:"beth@suntexroofs.com", state:"Texas", role:"Production manager", size:"6-15", aiUseBiz:"None", aiUseExt:"Yes, regularly", comfort:5, view:"not sure" },
+  { email:"bill@homerestorationsmd.com", state:"Maryland", role:"Owner", size:"2-5", aiUseBiz:"All areas", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"james@hamblets.ca", state:"Ontario", role:"Office admin", size:"16-50", aiUseBiz:"Lead gen", aiUseExt:"Yes, regularly", comfort:4, view:"useful tool" },
+  { email:"hunter@luckyroofing.com", state:"Tennessee", role:"Sales manager", size:"2-5", aiUseBiz:"Estimates/Admin", aiUseExt:"Yes, tried a few", comfort:4, view:"useful tool" },
+  { email:"jeff@cavaliermetalroofs.com", state:"Ohio", role:"Owner", size:"Just me", aiUseBiz:"Estimates/Admin/Email", aiUseExt:"Yes, regularly", comfort:3, view:"useful tool" },
+  { email:"production@gproofandpaint.com", state:"Georgia", role:"Owner", size:"6-15", aiUseBiz:"None", aiUseExt:"No, but open", comfort:4, view:"useful tool" },
+  { email:"stephen@radroofsa.com", state:"Texas", role:"Sales rep", size:"16-50", aiUseBiz:"None", aiUseExt:"No, but open", comfort:5, view:"not sure" },
+  { email:"paulbenoit24@gmail.com", state:"Nova Scotia", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not sure" },
+  { email:"wesshoe92@gmail.com", state:"Florida", role:"Project manager", size:"6-15", aiUseBiz:"Admin", aiUseExt:"Yes, regularly", comfort:3, view:"useful tool" },
+  { email:"shakemastermark@gmail.com", state:"Ohio", role:"Owner", size:"6-15", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:3, view:"useful tool" },
+  { email:"shadm@stormwarriorroof.com", state:"Indiana", role:"Sales manager", size:"6-15", aiUseBiz:"Lead gen", aiUseExt:"Yes, regularly", comfort:4, view:"useful tool" },
+  { email:"caseyroofinginc@gmail.com", state:"Utah", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"No, but open", comfort:2, view:"not sure" },
+  { email:"santinomartinez162@gmail.com", state:"Michigan", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:2, view:"not sure" },
+  { email:"bzwright11@gmail.com", state:"Maryland", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"No, but open", comfort:2, view:"useful tool" },
+  { email:"stephen_reno21@yahoo.com", state:"Wyoming", role:"Sales manager", size:"6-15", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"useful tool" },
+  { email:"denny@kcrrsolutions.com", state:"Missouri", role:"Project manager", size:"6-15", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:2, view:"not sure" },
+  { email:"office@midwestmetalsllc.com", state:"Texas", role:"Project manager", size:"6-15", aiUseBiz:"Lead gen/Estimates/Schedule/Team", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"stinsley@srttx.com", state:"Texas", role:"Project manager", size:"51-100", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not sure" },
+  { email:"aaron@pinnacleroofing.ca", state:"British Columbia", role:"Owner", size:"51-100", aiUseBiz:"Admin", aiUseExt:"Yes, tried a few", comfort:2, view:"major opportunity" },
+  { email:"akroofingandmore@gmail.com", state:"Tennessee", role:"Owner", size:"Just me", aiUseBiz:"Estimates", aiUseExt:"Yes, tried a few", comfort:3, view:"useful tool" },
+  { email:"andrew.bell@mybellaroof.com", state:"Pennsylvania", role:"Owner", size:"16-50", aiUseBiz:"Claims", aiUseExt:"Yes, regularly", comfort:5, view:"useful tool" },
+  { email:"jeremiah@512roofs.com", state:"Texas", role:"Owner", size:"2-5", aiUseBiz:"Estimates/Admin", aiUseExt:"Yes, regularly", comfort:3, view:"major opportunity" },
+  { email:"roofing406@gmail.com", state:"Montana", role:"Owner", size:"2-5", aiUseBiz:"Estimates/Emails", aiUseExt:"Yes, regularly", comfort:4, view:"useful tool" },
+  { email:"william@w2construction.org", state:"Texas", role:"Owner", size:"Just me", aiUseBiz:"All areas", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"woodwardroofing.trevor@gmail.com", state:"Georgia", role:"Owner", size:"Just me", aiUseBiz:"Estimates", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"kyle@rdroof.com", state:"Arizona", role:"Owner", size:"6-15", aiUseBiz:"Research/Marketing", aiUseExt:"Yes, regularly", comfort:3, view:"major opportunity" },
+  { email:"gutierrez.roofing@yahoo.com", state:"California", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"No, but open", comfort:2, view:"useful tool" },
+  { email:"john.gerlachconstruction@gmail.com", state:"Missouri", role:"Owner", size:"6-15", aiUseBiz:"Admin", aiUseExt:"Yes, tried a few", comfort:4, view:"useful tool" },
+  { email:"richwest.sbc@gmail.com", state:"New York", role:"Production manager", size:"16-50", aiUseBiz:"None", aiUseExt:"No, but open", comfort:4, view:"not sure" },
+  { email:"whitsadjusting@gmail.com", state:"Kentucky", role:"Owner", size:"Just me", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:1, view:"not sure" },
+  { email:"osvaldola86@icloud.com", state:"Unknown", role:"Owner", size:"More than 100", aiUseBiz:"Lead gen", aiUseExt:"Yes, regularly", comfort:5, view:"major opportunity" },
+  { email:"operations@goldenrulesolarandroofing.com", state:"Georgia", role:"Office admin", size:"2-5", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not sure" },
+  { email:"jeffwlegacyroofing@gmail.com", state:"Alabama", role:"Owner", size:"Just me", aiUseBiz:"Estimates", aiUseExt:"No, but open", comfort:4, view:"major opportunity" },
+  { email:"ben@gangloffroofing.com", state:"Pennsylvania", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:4, view:"useful tool" },
+  { email:"regina@perry-roofing.com", state:"Arkansas", role:"Other", size:"2-5", aiUseBiz:"None", aiUseExt:"No, not interested", comfort:3, view:"useful tool" },
+  { email:"christine@ttproofing.com", state:"Texas", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"Yes, tried a few", comfort:2, view:"useful tool" },
+  { email:"info@ottawaflatroofrepair.com", state:"Ontario", role:"Owner", size:"2-5", aiUseBiz:"None", aiUseExt:"No, but open", comfort:3, view:"not sure" },
+  { email:"sp@tceifl.com", state:"Florida", role:"Owner", size:"6-15", aiUseBiz:"None", aiUseExt:"Yes, regularly", comfort:5, view:"not sure" },
+];
+
+const CA_PROVINCES = ["ontario","british columbia","alberta","quebec","manitoba","saskatchewan","nova scotia","new brunswick","bc","ab","on","qc","ottawa","saskatchewan"];
+function getCandidateRegion(state) {
+  const s = (state || "").toLowerCase();
+  return CA_PROVINCES.some(p => s.includes(p)) ? "Canada" : "US";
+}
+function getCandidateSegment(p) {
+  const usesBiz = p.aiUseBiz !== "None" && p.aiUseBiz !== "";
+  const regularly = p.aiUseExt === "Yes, regularly";
+  const triedFew = p.aiUseExt === "Yes, tried a few";
+  const open = p.aiUseExt === "No, but open";
+  const notInterested = p.aiUseExt === "No, not interested";
+  const bullish = p.view === "major opportunity";
+  if (usesBiz && (regularly || triedFew) && p.comfort >= 4) return "Active Adopters";
+  if (usesBiz && regularly) return "Active Adopters";
+  if (regularly && p.comfort >= 4 && bullish) return "Active Adopters";
+  if ((open || triedFew) && p.comfort <= 2 && !usesBiz) return "Overwhelmed Curious";
+  if (open && p.comfort <= 3 && !usesBiz && !bullish) return "Overwhelmed Curious";
+  if (notInterested && p.comfort <= 2) return "Passive Bystanders";
+  if (notInterested && !usesBiz && p.comfort <= 3) return "Passive Bystanders";
+  return "Cautious Holdbacks";
+}
+function dedupeByEmail(arr) {
+  const seen = new Set();
+  return arr.filter(r => { const k = r.email.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
+}
+const ALL_CANDIDATES = dedupeByEmail(RAW_CANDIDATES).map(r => ({ ...r, segment: getCandidateSegment(r), region: getCandidateRegion(r.state) }));
+
+const CAND_SEG_CONFIG = {
+  "Active Adopters":    { color: GREEN,  bg: "#edf7f1", border: "#a3d9b5" },
+  "Overwhelmed Curious":{ color: "#2d9b6e", bg: "#e6f7f1", border: "#86d4b0" },
+  "Cautious Holdbacks": { color: AMBER,  bg: "#FEF7EC", border: "#f5cf8a" },
+  "Passive Bystanders": { color: PURPLE, bg: "#f3f0fc", border: "#c4b5f5" },
+};
+const CAND_SEG_ORDER = ["Active Adopters", "Overwhelmed Curious", "Cautious Holdbacks", "Passive Bystanders"];
+
+const TABS = [
+  { id: "exec", label: "Executive summary", icon: "◈" },
+  { id: "themes", label: "Key themes", icon: "◉" },
+  { id: "segments", label: "Segments", icon: "▤" },
+  { id: "geo", label: "Geo & size", icon: "⊕" },
+  { id: "competitive", label: "Competitive", icon: "◎" },
+  { id: "interviews", label: "Interview prep", icon: "◻" },
+  { id: "candidates", label: "Candidates", icon: "◑" },
+];
+
+function Badge({ text, color }) {
+  return <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10, background: color + "20", color, letterSpacing: "0.03em" }}>{text}</span>;
+}
+function SectionLabel({ text, color }) {
+  return <div style={{ fontSize: 11, fontWeight: 700, color: color || "#888", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>{text}</div>;
+}
+
+function ExecTab() {
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 20 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: "#aab4cc", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Bottom line</div>
+        <div style={{ fontSize: 15, color: "#e8edf8", lineHeight: 1.7, fontWeight: 500 }}>{EXEC_SUMMARY.headline}</div>
+      </div>
+      {EXEC_SUMMARY.findings.map((f, i) => (
+        <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 18, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", display: "flex", gap: 16, alignItems: "flex-start", borderLeft: `4px solid ${f.color}` }}>
+          <div style={{ fontSize: 22, fontWeight: 900, color: f.color, minWidth: 32, lineHeight: 1, fontFamily: "monospace" }}>{f.n}</div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", marginBottom: 6 }}>{f.title}</div>
+            <div style={{ fontSize: 13, color: "#444", lineHeight: 1.65 }}>{f.body}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ThemesTab() {
+  const [open, setOpen] = useState(0);
+  return (
+    <div style={{ display: "grid", gap: 10 }}>
+      <div style={{ background: "#EBF1FF", borderRadius: 10, padding: 14, fontSize: 13, color: "#1a3a8f" }}>
+        5 cross-cutting themes from survey data + competitive audit combined. Each theme includes the signal source, Roofr's angle, and the interview question to probe it.
+      </div>
+      {THEMES.map((t, i) => (
+        <div key={i} style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", border: "1px solid #edf1fa" }}>
+          <div onClick={() => setOpen(open === i ? null : i)} style={{ padding: "14px 18px", cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ fontSize: 20 }}>{t.icon}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", flex: 1 }}>{t.title}</div>
+            <div style={{ fontSize: 12, color: t.color, background: t.color + "15", padding: "3px 10px", borderRadius: 10, fontWeight: 600 }}>Theme</div>
+            <div style={{ fontSize: 16, color: "#aaa" }}>{open === i ? "▲" : "▼"}</div>
+          </div>
+          {open === i && (
+            <div style={{ borderTop: "1px solid #f0f2f8", padding: "16px 18px", display: "grid", gap: 14 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                {[{ label: "Survey signal", color: ACCENT, text: t.surveySignal }, { label: "Competitive signal", color: PURPLE, text: t.competitiveSignal }, { label: "Roofr angle", color: GREEN, text: t.roofrAngle }].map((s, j) => (
+                  <div key={j} style={{ background: s.color + "08", border: `1px solid ${s.color}25`, borderRadius: 8, padding: "10px 14px" }}>
+                    <SectionLabel text={s.label} color={s.color} />
+                    <div style={{ fontSize: 12, color: "#333", lineHeight: 1.5 }}>{s.text}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ background: "#1a1a2e", borderRadius: 8, padding: "12px 16px" }}>
+                <SectionLabel text="Key interview question" color="#aab4cc" />
+                <div style={{ fontSize: 13, color: "#e8edf8", fontStyle: "italic", lineHeight: 1.5 }}>{t.interviewAngle}</div>
+              </div>
+              <div>
+                <SectionLabel text="Open questions" color="#888" />
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {t.openQuestions.map((q, j) => (
+                    <div key={j} style={{ fontSize: 12, color: "#444", background: "#f5f7fc", padding: "5px 10px", borderRadius: 6, lineHeight: 1.4 }}>{q}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SegmentsTab() {
+  const [active, setActive] = useState(0);
+  const seg = SEGMENTS[active];
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <div style={{ background: "#EBF1FF", borderRadius: 10, padding: 14, fontSize: 13, color: "#1a3a8f" }}>
+        4-segment model from k-means clustering on 274 respondents with complete attitudinal data (silhouette 0.34). Treat Passive Bystanders as directional — n=26.
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+        {SEGMENTS.map((s, i) => (
+          <div key={i} onClick={() => setActive(i)} style={{ background: active === i ? s.color : "#fff", borderRadius: 10, padding: 14, cursor: "pointer", border: `2px solid ${active === i ? s.color : "#edf1fa"}`, boxShadow: "0 1px 6px rgba(0,0,0,0.07)" }}>
+            <div style={{ fontSize: 22, marginBottom: 4 }}>{s.emoji}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: active === i ? "#fff" : s.color, lineHeight: 1.3 }}>{s.name}</div>
+            <div style={{ fontSize: 11, color: active === i ? "rgba(255,255,255,0.8)" : "#888", marginTop: 2 }}>n={s.n} · {s.pct}%</div>
+            {s.name === "Passive Bystanders" && <div style={{ fontSize: 10, color: active === i ? "rgba(255,255,255,0.7)" : "#aaa", marginTop: 2 }}>directional</div>}
+          </div>
+        ))}
+      </div>
+      <div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", border: `1px solid ${seg.border}` }}>
+        <div style={{ background: seg.bg, borderBottom: `1px solid ${seg.border}`, padding: "12px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 28 }}>{seg.emoji}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: seg.color }}>{seg.name} <span style={{ fontSize: 13, fontWeight: 400, color: "#888" }}>· {seg.pct}% · n={seg.n}</span></div>
+            <div style={{ fontSize: 13, color: "#444", fontStyle: "italic" }}>{seg.tagline}</div>
+          </div>
+          <div style={{ textAlign: "right", flexShrink: 0 }}>
+            <div style={{ fontSize: 11, color: "#888" }}>Interview target</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: seg.color }}>{seg.target}</div>
+          </div>
+        </div>
+        <div style={{ padding: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
+              {seg.stats.map((s, i) => (
+                <div key={i} style={{ background: "#f8f9fc", borderRadius: 6, padding: "8px 10px" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: seg.color }}>{s.value}</div>
+                  <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+            {[{ label: "Top pain points", text: seg.topPain }, { label: "Demographics", text: seg.demographics }, { label: "Primary concern", text: seg.concerns }, { label: "Confidence builder", text: seg.confidence }, { label: "Interview goal", text: seg.interviewGoal }].map((item, j) => (
+              <div key={j} style={{ marginBottom: 10 }}>
+                <SectionLabel text={item.label} color="#888" />
+                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5 }}>{item.text}</div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <SectionLabel text="Suggested interview questions" color={seg.color} />
+            {seg.questions.map((q, j) => (
+              <div key={j} style={{ display: "flex", gap: 10, marginBottom: 10, padding: "8px 12px", background: "#f8f9fc", borderRadius: 8 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: seg.color, marginTop: 5, flexShrink: 0 }} />
+                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5, fontStyle: "italic" }}>{q}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GeoSizeTab() {
+  const [view, setView] = useState("geo");
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <div style={{ display: "flex", gap: 8 }}>
+        {[["geo", "US vs Canada"], ["size", "Company size"]].map(([v, label]) => (
+          <button key={v} onClick={() => setView(v)} style={{ padding: "7px 18px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: view === v ? ACCENT : "#fff", color: view === v ? "#fff" : "#555", boxShadow: view === v ? "0 2px 8px rgba(59,111,232,0.3)" : "0 1px 4px rgba(0,0,0,0.08)" }}>{label}</button>
+        ))}
+      </div>
+      {view === "geo" && (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {[{ flag: "🇺🇸", label: "United States", n: GEO.usn, pct: 80, c1: ACCENT, metrics: [["Avg comfort", "3.08 / 5"], ["Likelihood to try", "3.41 / 5"], ["Biz AI use", "0.9 areas"], ["Use AI regularly", "26%"], ["Not interested", "18%"]] },
+              { flag: "🇨🇦", label: "Canada", n: GEO.can, pct: 20, c1: ORANGE, metrics: [["Avg comfort", "2.98 / 5"], ["Likelihood to try", "3.68 / 5"], ["Biz AI use", "1.3 areas"], ["Use AI regularly", "32%"], ["Not interested", "22%"]] }].map((c, i) => (
+              <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 16, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", borderTop: `3px solid ${c.c1}` }}>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e" }}>{c.flag} {c.label}</div>
+                <div style={{ fontSize: 12, color: "#888", marginBottom: 12 }}>n={c.n} · {c.pct}% of sample</div>
+                {c.metrics.map(([k, v]) => (
+                  <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "4px 0", borderBottom: "1px solid #f5f7fc" }}>
+                    <span style={{ color: "#666" }}>{k}</span>
+                    <span style={{ fontWeight: 700, color: "#1a1a2e" }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          {GEO.findings.map((f, i) => (
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 18, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", borderLeft: `4px solid ${ACCENT}` }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", marginBottom: 8 }}>{f.title}</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+                <div style={{ background: "#EBF1FF", borderRadius: 6, padding: "8px 12px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, marginBottom: 2 }}>🇺🇸 US</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#1a1a2e" }}>{f.us}</div>
+                </div>
+                <div style={{ background: "#FEF2EE", borderRadius: 6, padding: "8px 12px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: ORANGE, marginBottom: 2 }}>🇨🇦 Canada</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#1a1a2e" }}>{f.ca}</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 13, color: "#444", lineHeight: 1.6 }}>{f.detail}</div>
+            </div>
+          ))}
+          <div style={{ background: "#1a1a2e", borderRadius: 10, padding: 16 }}>
+            <SectionLabel text="Interview note" color="#aab4cc" />
+            <div style={{ fontSize: 13, color: "#e8edf8", lineHeight: 1.6 }}>{GEO.interviewNote}</div>
+          </div>
+        </>
+      )}
+      {view === "size" && (
+        <div style={{ display: "grid", gap: 14 }}>
+          <div style={{ background: "#EBF1FF", borderRadius: 10, padding: 14, fontSize: 13, color: "#1a3a8f" }}>
+            Small teams (6–15) are the sweet spot for adoption. Solo/Micro are the largest group but most cost-sensitive. Mid+ have the highest privacy and customer-trust concerns.
+          </div>
+          {SIZE_TIERS.map((t, i) => (
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 18, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", borderTop: `3px solid ${t.color}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: t.color }}>{t.label}</div>
+                  <div style={{ fontSize: 12, color: "#888" }}>n={t.n}</div>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[["Comfort", t.comfort + "/5"], ["Likelihood", t.likelihood + "/5"], ["Biz AI", t.bizAI]].map(([k, v]) => (
+                    <div key={k} style={{ background: t.color + "12", borderRadius: 6, padding: "6px 10px", textAlign: "center" }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: t.color }}>{v}</div>
+                      <div style={{ fontSize: 10, color: "#888" }}>{k}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {[["Top pain points", t.topPain, false], ["Key insight", t.keyInsight, false], ["Interview focus", t.interviewNote, true]].map(([k, v, italic], j) => (
+                <div key={j} style={{ marginBottom: 10, display: "grid", gridTemplateColumns: "120px 1fr", gap: 8 }}>
+                  <SectionLabel text={k} color="#888" />
+                  <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5, fontStyle: italic ? "italic" : "normal" }}>{v}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+          <div style={{ background: "#1a1a2e", borderRadius: 10, padding: 16 }}>
+            <SectionLabel text="Cross-cutting" color="#aab4cc" />
+            {["'Review before send' is the #1 confidence builder at every size tier — 57–62% across all groups.", "Team management pain only appears at 6+ employees. Solo/Micro don't feel it.", "Cost sensitivity peaks at Solo/Micro (22%) and drops at Mid+ (14%) — inverse of what you'd expect.", "Commercial work increases with size (33% → 46% → 65%), which explains higher privacy concern at Mid+."].map((c, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8 }}>
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, marginTop: 6, flexShrink: 0 }} />
+                <div style={{ fontSize: 13, color: "#e8edf8", lineHeight: 1.5 }}>{c}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CompetitiveTab() {
+  const [open, setOpen] = useState(null);
+  const types = ["Direct", "AI Native", "Indirect"];
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <div style={{ background: "#EBF1FF", borderRadius: 10, padding: 14, fontSize: 13, color: "#1a3a8f" }}>
+        Competitor audit across Direct, AI Native, and Indirect competitors. Focus: AI features, trust patterns, gaps, and Roofr implications.
+      </div>
+      {types.map(type => (
+        <div key={type}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8, paddingLeft: 4 }}>{type} Competitors</div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {COMPETITIVE.filter(c => c.type === type).map((comp, i) => (
+              <div key={i} style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", border: "1px solid #edf1fa" }}>
+                <div onClick={() => setOpen(open === comp.name ? null : comp.name)} style={{ padding: "14px 18px", cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: comp.color, flexShrink: 0 }} />
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", flex: 1 }}>{comp.name}</div>
+                  <Badge text={comp.type} color={comp.color} />
+                  <div style={{ fontSize: 16, color: "#aaa" }}>{open === comp.name ? "▲" : "▼"}</div>
+                </div>
+                {open === comp.name && (
+                  <div style={{ borderTop: "1px solid #f0f2f8", padding: "16px 18px", display: "grid", gap: 12 }}>
+                    {[{ label: "AI features", color: ACCENT, text: comp.aiFeatures }, { label: "Positioning", color: PURPLE, text: comp.positioning }, { label: "Trust mechanism", color: GREEN, text: comp.trustMechanism }, { label: "Gap", color: AMBER, text: comp.gap }].map((item, j) => (
+                      <div key={j} style={{ display: "grid", gridTemplateColumns: "130px 1fr", gap: 8 }}>
+                        <SectionLabel text={item.label} color={item.color} />
+                        <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5 }}>{item.text}</div>
+                      </div>
+                    ))}
+                    <div style={{ background: "#1a1a2e", borderRadius: 8, padding: "10px 14px" }}>
+                      <SectionLabel text="Roofr implication" color="#aab4cc" />
+                      <div style={{ fontSize: 13, color: "#e8edf8", lineHeight: 1.5 }}>{comp.roofrImplication}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      <div style={{ background: "#fff", borderRadius: 10, padding: 18, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", borderTop: `3px solid ${ORANGE}` }}>
+        <SectionLabel text="Cross-competitor synthesis — trust patterns" color={ORANGE} />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+          {[{ label: "Subtle + outcome", text: "JobNimbus, AccuLynx. AI is the product. Trust comes from speed and measurable results.", color: GREEN }, { label: "Subtle + credibility", text: "AccuLynx. Real testing in the 'darkest' places (accuracy, revenue) before you launch.", color: ACCENT }, { label: "Front and centre + credibility", text: "ServiceTitan, Atlas. Truth comes from data and case studies. Hardest to replicate, highest legitimacy.", color: PURPLE }, { label: "Visual proof", text: "Hover. 'See the result.' The homeowner's own house is the trust mechanism — highest acceptance rate.", color: AMBER }].map((item, i) => (
+            <div key={i} style={{ background: item.color + "08", border: `1px solid ${item.color}25`, borderRadius: 8, padding: "10px 14px" }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: item.color, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{item.label}</div>
+              <div style={{ fontSize: 12, color: "#333", lineHeight: 1.4 }}>{item.text}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: "#1a1a2e", borderRadius: 8, padding: "12px 16px" }}>
+          <SectionLabel text="Roofr's position" color="#aab4cc" />
+          <div style={{ fontSize: 13, color: "#e8edf8", lineHeight: 1.6 }}>The industry hasn't settled on a trust model. Roofr has a genuine opportunity to own "visual proof + review before send" — your measurement data makes it more accurate than competitors, and the review pattern directly addresses the #1 adoption blocker from the survey.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InterviewsTab() {
+  const [view, setView] = useState("themes");
+  const [openTheme, setOpenTheme] = useState(null);
+  const [openGap, setOpenGap] = useState(null);
+
+  const gapTypeConfig = {
+    "design-gap":   { color: ACCENT,  label: "Design gap" },
+    "coverage-gap": { color: PURPLE,  label: "Coverage gap" },
+    "signal":       { color: GREEN,   label: "Signal" },
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <div style={{ background: "#fff", borderRadius: 10, padding: 16, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", borderTop: `3px solid ${ACCENT}` }}>
+        <SectionLabel text="Suggested interview mix" color={ACCENT} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+          {SEGMENTS.map((s, i) => (
+            <div key={i} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 8, padding: "10px 14px" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: s.color }}>{s.emoji} {s.name}</div>
+              <div style={{ fontSize: 12, color: "#555", marginTop: 2 }}>{s.target}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 8 }}>
+        {[["themes", "Interview themes (6)"], ["gaps", "What we don't know (5)"], ["guide", "Question guide"]].map(([v, label]) => (
+          <button key={v} onClick={() => setView(v)} style={{ padding: "7px 16px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: view === v ? ACCENT : "#fff", color: view === v ? "#fff" : "#555", boxShadow: view === v ? "0 2px 8px rgba(59,111,232,0.3)" : "0 1px 4px rgba(0,0,0,0.08)" }}>{label}</button>
+        ))}
+      </div>
+      {view === "themes" && (
+        <>
+          <div style={{ background: "#EBF1FF", borderRadius: 10, padding: 14, fontSize: 13, color: "#1a3a8f" }}>
+            6 themes derived from survey data — 3 P1 (clear signal, needs depth) and 3 P2 (directional, needs validation). Each includes the evidence, a hypothesis to test, and tagged segments.
+          </div>
+          {INTERVIEW_THEMES.map((t, i) => (
+            <div key={i} style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", border: "1px solid #edf1fa" }}>
+              <div onClick={() => setOpenTheme(openTheme === i ? null : i)} style={{ padding: "14px 18px", cursor: "pointer", display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: t.color, background: t.color + "18", padding: "3px 8px", borderRadius: 6, flexShrink: 0, marginTop: 1 }}>{t.priority}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", lineHeight: 1.4, marginBottom: 6 }}>{t.title}</div>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {t.segments.map((s, j) => <Badge key={j} text={s} color={t.color} />)}
+                  </div>
+                </div>
+                <div style={{ fontSize: 16, color: "#aaa", flexShrink: 0, marginTop: 2 }}>{openTheme === i ? "▲" : "▼"}</div>
+              </div>
+              {openTheme === i && (
+                <div style={{ borderTop: "1px solid #f0f2f8", padding: "16px 18px", display: "grid", gap: 14 }}>
+                  <div>
+                    <SectionLabel text="Why this matters" color="#888" />
+                    <div style={{ fontSize: 13, color: "#444", lineHeight: 1.6 }}>{t.why}</div>
+                  </div>
+                  <div>
+                    <SectionLabel text="Suggested questions" color={t.color} />
+                    <div style={{ display: "grid", gap: 6 }}>
+                      {t.questions.map((q, j) => (
+                        <div key={j} style={{ display: "flex", gap: 10, padding: "8px 12px", background: "#f8f9fc", borderRadius: 8 }}>
+                          <div style={{ width: 6, height: 6, borderRadius: "50%", background: t.color, marginTop: 5, flexShrink: 0 }} />
+                          <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5, fontStyle: "italic" }}>{q}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ background: t.color + "10", border: `1px solid ${t.color}30`, borderRadius: 8, padding: "10px 14px" }}>
+                    <SectionLabel text="Hypothesis to test" color={t.color} />
+                    <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5 }}>{t.hypothesis}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </>
+      )}
+      {view === "gaps" && (
+        <>
+          <div style={{ background: "#EBF1FF", borderRadius: 10, padding: 14, fontSize: 13, color: "#1a3a8f" }}>
+            Things the survey surfaced but couldn't answer — question design issues, coverage gaps, and signals hiding in open-text responses. These should shape interview screening and guide.
+          </div>
+          {INTERVIEW_GAPS.map((g, i) => {
+            const tc = gapTypeConfig[g.type] || { color: "#888", label: g.type };
+            return (
+              <div key={i} style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", border: "1px solid #edf1fa", borderLeft: `4px solid ${tc.color}` }}>
+                <div onClick={() => setOpenGap(openGap === i ? null : i)} style={{ padding: "14px 18px", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ flex: 1, fontSize: 14, fontWeight: 700, color: "#1a1a2e", lineHeight: 1.4 }}>{g.title}</div>
+                  <Badge text={tc.label} color={tc.color} />
+                  <div style={{ fontSize: 16, color: "#aaa", flexShrink: 0 }}>{openGap === i ? "▲" : "▼"}</div>
+                </div>
+                {openGap === i && (
+                  <div style={{ borderTop: "1px solid #f0f2f8", padding: "14px 18px", display: "grid", gap: 10 }}>
+                    <div style={{ fontSize: 13, color: "#444", lineHeight: 1.6 }}>{g.detail}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                      <div style={{ background: "#fff5f3", borderRadius: 6, padding: "8px 12px" }}>
+                        <SectionLabel text="Impact" color={ORANGE} />
+                        <div style={{ fontSize: 12, color: "#555", lineHeight: 1.5 }}>{g.impact}</div>
+                      </div>
+                      <div style={{ background: "#edf7f1", borderRadius: 6, padding: "8px 12px" }}>
+                        <SectionLabel text="Fix in interviews" color={GREEN} />
+                        <div style={{ fontSize: 12, color: "#555", lineHeight: 1.5, fontStyle: "italic" }}>{g.fix}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </>
+      )}
+      {view === "guide" && (
+        <>
+          <div style={{ background: "#EBF1FF", borderRadius: 10, padding: 14, fontSize: 13, color: "#1a3a8f" }}>
+            General question guide — use opening/closing with everyone, tailor middle sections to segment. Questions derived from the 6 themes above.
+          </div>
+          {[{ category: "Opening / context", color: "#555", questions: ["Tell me about your business — team size, type of work?", "Walk me through a typical week. What takes up most of your time?", "What software are you using and what do you actually use it for day-to-day?"] }, { category: "Pain points", color: ACCENT, questions: ["What's the part of your job you'd most like to hand off to someone else?", "Walk me through creating an estimate start to finish. Where does it slow down?", "What's something you do almost exactly the same way every single time?", "When you're really stretched — what's the thing that starts slipping?"] }, { category: "AI attitudes", color: PURPLE, questions: ["Do you use any AI tools today — inside or outside your business software?", "When you hear 'AI feature' in software — what do you picture?", "Has a tool ever done something automatically that you wished it hadn't? What happened?", "Is there a word or framing that would make you more or less likely to try something?"] }, { category: "Trust & control", color: ORANGE, questions: ["If AI drafted an estimate for you — what would reviewing it look like? Would you edit it or just approve?", "What specific mistake would you be most worried about AI making?", "If it got things right 90% of the time, would that be good enough? What about 95%? 99%?", "Is there anything you'd never want AI to handle — even with review?"] }, { category: "Roofr-specific", color: GREEN, questions: ["What's the thing you do most often in Roofr right now?", "If Roofr added an AI feature tomorrow — what would you need to see before you turned it on?", "Is there anything you wish Roofr could do automatically that you currently do manually?", "One customer built a custom AI-backed CRM. What would have to be true for you to do something like that?"] }, { category: "Closing", color: "#555", questions: ["If you imagine Roofr two years from now — what would make it feel essential?", "Is there anything you expected me to ask that I didn't?", "Who else on your team would we benefit from talking to?"] }].map((cat, i) => (
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: "12px 18px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", borderLeft: `4px solid ${cat.color}` }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: cat.color, marginBottom: 10 }}>{cat.category}</div>
+              <div style={{ display: "grid", gap: 6 }}>
+                {cat.questions.map((q, j) => (
+                  <div key={j} style={{ display: "flex", gap: 10, padding: "7px 12px", background: "#f8f9fc", borderRadius: 6 }}>
+                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: cat.color, marginTop: 6, flexShrink: 0 }} />
+                    <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5, fontStyle: "italic" }}>{q}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+      <div style={{ background: "#1a1a2e", borderRadius: 10, padding: 16 }}>
+        <SectionLabel text="Screening criteria" color="#aab4cc" />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          {["Active Adopters: 5–8 · Overwhelmed Curious: 4–6 · Cautious Holdbacks: 5–8 · Passive Bystanders: 2–3 (directional)", "Geographic spread — at least 3 Canadian respondents", "Role mix — owners, office admins, sales reps", "Size spread — at least 2 from each tier (solo, 6–15, 16+)", "Work type — at least 4 insurance-focused contractors", "Priority — find the respondent who built a custom Gemini-backed CRM"].map((c, i) => (
+            <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, marginTop: 6, flexShrink: 0 }} />
+              <div style={{ fontSize: 12, color: "#e8edf8", lineHeight: 1.5 }}>{c}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CandidatesTab() {
+  const [segFilter, setSegFilter] = useState("all");
+  const [regionFilter, setRegionFilter] = useState("all");
+
+  let filtered = ALL_CANDIDATES;
+  if (segFilter !== "all") filtered = filtered.filter(r => r.segment === segFilter);
+  if (regionFilter !== "all") filtered = filtered.filter(r => r.region === regionFilter);
+
+  const counts = {};
+  CAND_SEG_ORDER.forEach(s => { counts[s] = 0; });
+  ALL_CANDIDATES.forEach(r => { counts[r.segment] = (counts[r.segment] || 0) + 1; });
+
+  const bySegment = {};
+  filtered.forEach(r => { if (!bySegment[r.segment]) bySegment[r.segment] = []; bySegment[r.segment].push(r); });
+
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12 }}>
+        <div style={{ background: "#fff", borderRadius: 10, padding: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.08)", borderTop: `3px solid ${ACCENT}`, textAlign: "center" }}>
+          <div style={{ fontSize: 30, fontWeight: 800, color: ACCENT }}>{ALL_CANDIDATES.length}</div>
+          <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>Total opted in</div>
+        </div>
+        {CAND_SEG_ORDER.map(s => (
+          <div key={s} style={{ background: "#fff", borderRadius: 10, padding: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.08)", borderTop: `3px solid ${CAND_SEG_CONFIG[s].color}`, textAlign: "center" }}>
+            <div style={{ fontSize: 30, fontWeight: 800, color: CAND_SEG_CONFIG[s].color }}>{counts[s] || 0}</div>
+            <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>{s}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ background: "#EBF1FF", borderRadius: 10, padding: 14, fontSize: 13, color: "#1a3a8f" }}>
+        <strong>Segments remapped</strong> to the 4-segment model. Filter by segment and region to build a diverse shortlist.
+      </div>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <span style={{ fontSize: 13, color: "#555" }}>Filter:</span>
+        <select value={segFilter} onChange={e => setSegFilter(e.target.value)} style={{ fontSize: 13, padding: "6px 10px", borderRadius: 6, border: "1px solid #dde3f0", background: "#fff", color: "#333", cursor: "pointer" }}>
+          <option value="all">All segments</option>
+          {CAND_SEG_ORDER.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} style={{ fontSize: 13, padding: "6px 10px", borderRadius: 6, border: "1px solid #dde3f0", background: "#fff", color: "#333", cursor: "pointer" }}>
+          <option value="all">All regions</option>
+          <option value="US">United States</option>
+          <option value="Canada">Canada</option>
+        </select>
+        <span style={{ fontSize: 12, color: "#888" }}>Showing {filtered.length} of {ALL_CANDIDATES.length} candidates</span>
+      </div>
+      {CAND_SEG_ORDER.map(seg => {
+        const list = bySegment[seg];
+        if (!list || !list.length) return null;
+        const cfg = CAND_SEG_CONFIG[seg];
+        return (
+          <div key={seg}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: cfg.bg, border: `1px solid ${cfg.border}`, borderRadius: "8px 8px 0 0", padding: "10px 16px" }}>
+              <span style={{ fontWeight: 700, fontSize: 14, color: cfg.color }}>{seg}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, background: cfg.color, color: "#fff", borderRadius: 12, padding: "2px 10px" }}>{list.length} candidates</span>
+            </div>
+            <div style={{ background: "#fff", border: `1px solid ${cfg.border}`, borderTop: "none", borderRadius: "0 0 8px 8px", overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(0,2.2fr) minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr)", gap: 8, padding: "6px 16px", background: "#f8f9fc", borderBottom: "1px solid #edf1fa" }}>
+                {["Email", "State / Province", "Role", "Company size"].map(h => (
+                  <span key={h} style={{ fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.04em" }}>{h}</span>
+                ))}
+              </div>
+              {list.map((r, i) => (
+                <div key={r.email} style={{ display: "grid", gridTemplateColumns: "minmax(0,2.2fr) minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr)", gap: 8, padding: "9px 16px", fontSize: 13, background: i % 2 === 0 ? "#fff" : "#fafbff", borderBottom: i < list.length - 1 ? "1px solid #f0f2f8" : "none", alignItems: "center" }}>
+                  <span style={{ color: "#1a1a2e", wordBreak: "break-all" }}>{r.email}</span>
+                  <span style={{ color: "#555" }}>{r.state}</span>
+                  <span style={{ color: "#555" }}>{r.role}</span>
+                  <span style={{ color: "#555" }}>{r.size}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+      {filtered.length === 0 && (
+        <div style={{ background: "#fff", borderRadius: 10, padding: 24, textAlign: "center", color: "#888", fontSize: 14 }}>No candidates match the current filters.</div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [tab, setTab] = useState("exec");
+  return (
+    <div style={{ fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", background: "#F5F7FC", minHeight: "100vh", padding: 20 }}>
+      <div style={{ maxWidth: 920, margin: "0 auto" }}>
+        <div style={{ marginBottom: 22 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Roofr · AI Research · Jun 2026</div>
+          <h1 style={{ fontSize: 22, fontWeight: 900, color: "#1a1a2e", margin: 0 }}>AI Perception — Research Hub</h1>
+          <p style={{ color: "#666", fontSize: 13, marginTop: 4 }}>323 survey responses · 7 competitors audited · 3 customer segments · Interview guide</p>
+        </div>
+        <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+          {TABS.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "7px 16px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: tab === t.id ? ACCENT : "#fff", color: tab === t.id ? "#fff" : "#555", boxShadow: tab === t.id ? "0 2px 8px rgba(59,111,232,0.3)" : "0 1px 4px rgba(0,0,0,0.08)" }}>
+              <span style={{ marginRight: 5, opacity: 0.7 }}>{t.icon}</span>{t.label}
+            </button>
+          ))}
+        </div>
+        {tab === "exec" && <ExecTab />}
+        {tab === "themes" && <ThemesTab />}
+        {tab === "segments" && <SegmentsTab />}
+        {tab === "geo" && <GeoSizeTab />}
+        {tab === "competitive" && <CompetitiveTab />}
+        {tab === "interviews" && <InterviewsTab />}
+        {tab === "candidates" && <CandidatesTab />}
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+  </script>
+</body>
+</html>
