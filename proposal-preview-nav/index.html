@@ -1,0 +1,2636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proposal Preview — Navigation + Summary Panel</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Circular Std', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 400;
+      font-size: var(--Sizes-Body);
+      color: var(--text-default);
+      background: #2D3C47;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── PROTO BAR ─────────────────────────────────────────── */
+    .proto-bar {
+      height: 36px;
+      background: #111827;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      flex-shrink: 0;
+      gap: 14px;
+      z-index: 200;
+    }
+    .proto-chip {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .proto-divider {
+      width: 1px;
+      height: 16px;
+      background: rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+    .proto-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .proto-group-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      white-space: nowrap;
+    }
+    .proto-toggle {
+      display: flex;
+      background: rgba(255,255,255,0.06);
+      border-radius: 5px;
+      padding: 2px;
+      gap: 1px;
+    }
+    .proto-btn {
+      height: 22px;
+      padding: 0 9px;
+      border-radius: 3px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.4);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 100ms ease;
+      white-space: nowrap;
+    }
+    .proto-btn.active {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.85);
+    }
+    .proto-btn svg { width: 10px; height: 10px; stroke-width: 2; flex-shrink: 0; }
+
+    /* ─── TOP BAR ─────────────────────────────────────────── */
+    .topbar {
+      height: 56px;
+      background: var(--background-default);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--spacing-page-md);
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border-default);
+      z-index: 100;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-components-xs);
+    }
+
+    /* Edit — link-style button */
+    .topbar-btn-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-components-xxs);
+      height: 32px;
+      padding: 0 var(--spacing-components-xs);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: var(--Sizes-Small);
+      font-weight: 500;
+      color: var(--text-link);
+      transition: color 150ms ease;
+      text-decoration: none;
+      border-radius: var(--radius-md);
+    }
+    .topbar-btn-link:hover { color: var(--text-link-hover); text-decoration: underline; }
+    .topbar-btn-link svg { width: 14px; height: 14px; stroke-width: 2; }
+
+    /* Download PDF — primary */
+    .topbar-btn-primary {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-components-xxs);
+      height: 44px;
+      padding: 0 var(--spacing-components-xxl);
+      border-radius: var(--radius-circle);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      background: var(--background-contrast);
+      color: #fff;
+      transition: background 150ms ease;
+      text-decoration: none;
+    }
+    .topbar-btn-primary:hover { background: var(--background-gradients-alternative-start); }
+    .topbar-btn-primary svg { width: var(--components-button-icon-size); height: var(--components-button-icon-size); stroke-width: var(--icon-stroke-regular); }
+
+    .topbar-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: var(--Sizes-Small);
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* Mode toggle — light background version */
+    .mode-toggle {
+      display: flex;
+      align-items: center;
+      background: var(--background-secondary);
+      border-radius: var(--radius-circle);
+      padding: 3px;
+      gap: 2px;
+      border: 1px solid var(--border-default);
+    }
+    .mode-btn {
+      height: 26px;
+      padding: 0 12px;
+      border-radius: var(--radius-circle);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: var(--Sizes-Smaller);
+      font-weight: 500;
+      transition: all 150ms ease;
+      background: transparent;
+      color: var(--text-muted);
+    }
+    .mode-btn.active {
+      background: var(--background-default);
+      color: var(--text-default);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* ─── MAIN LAYOUT ─────────────────────────────────────── */
+    .preview-layout {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ─── SIDEBAR ─────────────────────────────────────────── */
+    .sidebar {
+      position: fixed;
+      left: 20px;
+      top: calc(92px + 20px);
+      width: 236px;
+      max-height: calc(100vh - 92px - 40px);
+      background: #253040;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      transition: opacity 200ms, transform 200ms;
+    }
+
+    .sidebar.collapsed {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-16px);
+    }
+
+    .sidebar-inner {
+      width: 236px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px var(--spacing-components-lg) 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-label {
+      font-size: var(--Sizes-Smaller);
+      font-weight: 500;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-collapse-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 150ms ease;
+    }
+    .sidebar-collapse-btn:hover {
+      background: rgba(255,255,255,0.14);
+    }
+    .sidebar-collapse-btn svg { width: 14px; height: 14px; stroke-width: 2; }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--spacing-components-xs) 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+
+    .sidebar-nav::-webkit-scrollbar { width: 4px; }
+    .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 999px; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-components-xs);
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: background 150ms ease;
+      position: relative;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .nav-item.active {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .nav-item-num {
+      font-size: var(--Sizes-Smaller);
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      width: 16px;
+      flex-shrink: 0;
+    }
+    .nav-item.active .nav-item-num { color: var(--roofr-blue-50); }
+
+    .nav-item-label {
+      font-size: var(--Sizes-Small);
+      font-weight: 400;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item.active .nav-item-label {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .nav-item-dot {
+      display: none;
+    }
+
+    .nav-item-check {
+      width: 14px;
+      height: 14px;
+      color: var(--roofr-blue);
+      margin-left: auto;
+      opacity: 0;
+      flex-shrink: 0;
+      stroke-width: 2.5;
+    }
+    .nav-item.active .nav-item-check { opacity: 1; }
+
+    /* Floating menu button (visible when sidebar is collapsed) */
+    .sidebar-menu-btn {
+      position: fixed;
+      top: calc(92px + 14px);
+      left: 14px;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: rgba(37, 48, 64, 0.95);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.85);
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+      transition: background 150ms ease, color 150ms ease;
+    }
+    .sidebar-menu-btn:hover {
+      background: rgba(14, 30, 43, 1);
+      color: #fff;
+    }
+    .sidebar-menu-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+
+    /* ─── SCROLL AREA ─────────────────────────────────────── */
+    .preview-scroll-area {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 20px 80px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+    .preview-scroll-area::-webkit-scrollbar { width: 6px; }
+    .preview-scroll-area::-webkit-scrollbar-track { background: transparent; }
+    .preview-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 999px; }
+
+    /* ─── PROPOSAL PAGES ──────────────────────────────────── */
+    .proposal-page {
+      width: 100%;
+      max-width: 696px;
+      background: #fff;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 4px 36px rgba(0,0,0,0.3);
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    /* Cover page */
+    .page-cover {
+      height: 520px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover-photo {
+      width: 100%;
+      height: 360px;
+      background: linear-gradient(145deg, #4a6741 0%, #2d4a28 30%, #1a3520 60%, #2d4a28 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .cover-photo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(120,160,80,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(60,100,40,0.4) 0%, transparent 50%);
+    }
+    .cover-photo::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #4CAF50;
+    }
+    .cover-shingle-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.15;
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 18px,
+        rgba(0,0,0,0.3) 18px,
+        rgba(0,0,0,0.3) 20px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 30px,
+        rgba(0,0,0,0.2) 30px,
+        rgba(0,0,0,0.2) 31px
+      );
+    }
+    .cover-roofr-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      font-size: var(--Sizes-Smaller);
+      font-weight: 500;
+      color: var(--roofr-graphite);
+    }
+    .cover-body {
+      padding: 28px 32px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .cover-title { font-size: 28px; font-weight: 500; color: var(--text-highlight); line-height: 1.2; }
+    .cover-date { font-size: var(--Sizes-Small); color: var(--text-muted); margin-top: 4px; }
+    .cover-right { text-align: right; }
+    .cover-company { font-size: var(--Sizes-Body); font-weight: 500; color: var(--text-highlight); }
+    .cover-contact { font-size: var(--Sizes-Small); color: var(--text-muted); margin-top: 2px; line-height: 1.5; }
+
+    /* Section header bar */
+    .page-section-header {
+      padding: 24px 32px 20px;
+      border-bottom: 1px solid var(--border-default);
+    }
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--roofr-blue-5);
+      color: var(--roofr-blue-40B);
+      font-size: var(--Sizes-Smaller);
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: var(--radius-circle);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: var(--Sizes-H3);
+      font-weight: 500;
+      color: var(--text-highlight);
+    }
+    .section-subtitle {
+      font-size: var(--Sizes-Small);
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ─── TOPBAR SECONDARY / ICON BUTTONS ───────────────── */
+    .topbar-icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-circle);
+      border: 1.5px solid var(--border-default);
+      background: var(--background-secondary);
+      color: var(--text-default);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 150ms ease;
+      flex-shrink: 0;
+    }
+    .topbar-icon-btn:hover { background: var(--background-hover); }
+    .topbar-icon-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+
+    .topbar-btn-secondary {
+      height: 40px;
+      padding: 0 20px;
+      border-radius: var(--radius-circle);
+      border: 1.5px solid var(--border-default);
+      background: var(--background-secondary);
+      color: var(--text-default);
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .topbar-btn-secondary:hover { background: var(--background-hover); }
+
+    /* ─── ESTIMATE PAGES (matching Roofr dev) ────────────── */
+    .estimate-page-body {
+      padding: 28px 32px 36px;
+    }
+
+    .estimate-accent-bar {
+      width: 40px;
+      height: 4px;
+      background: var(--roofr-graphite, #1B2B3B);
+      border-radius: 2px;
+      margin-bottom: 16px;
+    }
+
+    .estimate-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-highlight);
+      margin-bottom: 24px;
+      line-height: 1.2;
+    }
+
+    .estimate-col-headers {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-default);
+      font-size: var(--Sizes-Smaller);
+      color: var(--text-muted);
+    }
+
+    .estimate-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-default);
+      gap: 24px;
+    }
+
+    .estimate-item-info { flex: 1; }
+
+    .estimate-item-name {
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      color: var(--text-highlight);
+    }
+
+    .estimate-item-desc {
+      font-size: var(--Sizes-Small);
+      color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.5;
+    }
+
+    .estimate-item-price {
+      font-size: var(--Sizes-Body);
+      color: var(--text-default);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .estimate-subtotal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0 4px;
+      font-size: var(--Sizes-H4);
+      font-weight: 500;
+      color: var(--text-highlight);
+    }
+
+    /* ─── SUMMARY / SELECTION PAGE ───────────────────────── */
+    .summary-instructions {
+      font-size: var(--Sizes-Small);
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .selection-option-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .selection-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid var(--border-default);
+      background: #fff;
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      position: relative;
+      transition: all 150ms ease;
+    }
+    .selection-checkbox:checked {
+      background: var(--roofr-blue);
+      border-color: var(--roofr-blue);
+    }
+    .selection-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 6px;
+      height: 10px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
+    }
+
+    .selection-option-content { flex: 1; }
+
+    .selection-option-name {
+      font-size: var(--Sizes-Body);
+      font-weight: 600;
+      color: var(--text-highlight);
+    }
+
+    .selection-option-right {
+      text-align: right;
+    }
+
+    .selection-option-price {
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      color: var(--text-highlight);
+    }
+
+    .selection-view-details {
+      font-size: var(--Sizes-Small);
+      color: var(--roofr-blue);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      font-family: inherit;
+      display: block;
+      margin-top: 2px;
+      text-align: right;
+    }
+    .selection-view-details:hover { text-decoration: underline; }
+
+    .selection-totals-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 20px 0 0;
+      border-top: 1px solid var(--border-default);
+      margin-top: 4px;
+    }
+
+    .selection-tax-note {
+      font-size: var(--Sizes-Smaller);
+      color: var(--text-muted);
+      font-style: italic;
+      flex: 1;
+      padding-top: 4px;
+      line-height: 1.4;
+    }
+
+    .selection-totals {
+      min-width: 220px;
+    }
+
+    .selection-total-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 32px;
+      font-size: var(--Sizes-Small);
+      color: var(--text-muted);
+      padding: 3px 0;
+    }
+
+    .selection-total-row.grand {
+      font-size: var(--Sizes-Body);
+      font-weight: 600;
+      color: var(--text-highlight);
+      padding-top: 8px;
+      margin-top: 4px;
+      border-top: 1px solid var(--border-default);
+    }
+
+    .customer-notes-section {
+      margin-top: 24px;
+    }
+
+    .customer-notes-label {
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      color: var(--text-highlight);
+      margin-bottom: 8px;
+    }
+
+    .customer-notes-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--components-input-border-default);
+      border-radius: var(--components-input-radius);
+      background: var(--roofr-blue-5);
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      color: var(--components-input-content-default);
+      resize: none;
+      min-height: 100px;
+      outline: none;
+    }
+    .customer-notes-input:focus { border-color: var(--components-input-border-active); }
+
+    /* Generic content pages */
+    .page-content {
+      padding: 24px 32px 32px;
+    }
+    .page-body-text {
+      font-size: var(--Sizes-Body);
+      color: var(--text-default);
+      line-height: 1.6;
+    }
+    .page-body-text p { margin-bottom: 12px; }
+    .page-body-text p:last-child { margin-bottom: 0; }
+
+    .page-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-components-md);
+      padding: 24px 32px;
+    }
+    .photo-thumb {
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--background-secondary);
+    }
+    .photo-thumb-inner {
+      width: 100%;
+      height: 100%;
+    }
+
+    .warranty-card {
+      margin: 0 32px 16px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .warranty-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--roofr-green-10);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--roofr-green);
+    }
+    .warranty-icon svg { width: 20px; height: 20px; stroke-width: 2; }
+    .warranty-name { font-size: var(--Sizes-Body); font-weight: 500; color: var(--text-highlight); }
+    .warranty-desc { font-size: var(--Sizes-Small); color: var(--text-muted); margin-top: 2px; }
+
+    /* Signature page */
+    .sig-area {
+      margin: 24px 32px 0;
+      border: 2px dashed var(--border-default);
+      border-radius: var(--radius-lg);
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-inactive);
+      font-size: var(--Sizes-Small);
+    }
+    .sig-meta {
+      display: flex;
+      gap: 32px;
+      margin: 16px 32px 24px;
+    }
+    .sig-field { flex: 1; }
+    .sig-field-label { font-size: var(--Sizes-Smaller); color: var(--text-muted); margin-bottom: 4px; }
+    .sig-field-value { font-size: var(--Sizes-Small); font-weight: 500; color: var(--text-default); }
+
+    /* ─── PAGE NAV FOOTER ────────────────────────────────── */
+    .page-nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      padding: var(--spacing-components-lg) 0 var(--spacing-page-md);
+      background: linear-gradient(to top, rgba(45,60,71,1) 0%, rgba(45,60,71,0) 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .page-nav-pill {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-components-xs);
+      background: rgba(14,30,43,0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius-circle);
+      padding: 6px 6px 6px 16px;
+      pointer-events: all;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .page-nav-counter {
+      font-size: var(--Sizes-Small);
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+      min-width: 64px;
+      text-align: center;
+    }
+
+    .nav-arrow-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-circle);
+      border: none;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 150ms ease;
+    }
+    .nav-arrow-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .nav-arrow-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    .nav-arrow-btn svg { width: 14px; height: 14px; stroke-width: 2; }
+
+    /* ─── SUMMARY PANEL ──────────────────────────────────── */
+    .summary-panel {
+      position: fixed;
+      right: 20px;
+      top: calc(92px + 20px);
+      width: 229px;
+      padding: 0;
+    }
+
+    .summary-card {
+      position: static;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+      padding: 0;
+      overflow: hidden;
+      background: var(--background-default);
+    }
+
+    .summary-card-header {
+      padding: 16px;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .summary-option-name {
+      font-size: var(--Sizes-Body);
+      color: var(--text-default);
+      margin-bottom: 4px;
+    }
+
+    .summary-total {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-highlight);
+      line-height: 1.1;
+      transition: all 200ms ease-in-out;
+    }
+
+    .summary-total.animating {
+      opacity: 0.4;
+      transform: translateY(-4px);
+    }
+
+    .summary-divider {
+      height: 1px;
+      background: var(--border-default);
+    }
+
+    .summary-card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-view-options {
+      width: 100%;
+      height: 44px;
+      border-radius: var(--radius-circle);
+      border: none;
+      background: var(--background-secondary);
+      color: var(--text-default);
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .btn-view-options:hover { background: var(--background-hover); }
+
+    .btn-primary {
+      width: 100%;
+      height: 44px;
+      border-radius: var(--radius-circle);
+      border: none;
+      background: var(--background-contrast);
+      color: #fff;
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 150ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-components-xxs);
+    }
+    .btn-primary:hover { background: var(--background-gradients-alternative-start); }
+    .btn-primary svg { width: var(--components-button-icon-size); height: var(--components-button-icon-size); stroke-width: var(--icon-stroke-regular); }
+
+    .btn-outline {
+      width: 100%;
+      height: 44px;
+      border-radius: var(--radius-circle);
+      border: 1px solid var(--border-primary);
+      background: var(--components-button-outline);
+      color: var(--text-link);
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 150ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-components-xxs);
+    }
+    .btn-outline:hover { background: var(--components-button-outline-hover); }
+    .btn-outline svg { width: var(--components-button-icon-size); height: var(--components-button-icon-size); stroke-width: var(--icon-stroke-regular); }
+
+    /* Contractor mode hides contact btn */
+    body.contractor-mode .contact-btn { display: none; }
+    body.contractor-mode .sign-btn { margin-top: 0; }
+
+    /* Homeowner mode: no back-to-edit, sign now is primary */
+    body.homeowner-mode .topbar-back-btn { display: none; }
+    body.homeowner-mode .topbar-btn-secondary { display: none; }
+    body.homeowner-mode .topbar-send-btn { display: none; }
+    body.homeowner-mode .topbar-sign-primary { display: flex; }
+    body.contractor-mode .topbar-sign-primary { display: none; }
+
+
+    /* ─── SIGN MODAL ─────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: var(--background-overlay);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: var(--background-default);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 4px 36px rgba(0,0,0,0.2);
+      width: 520px;
+      max-width: 90vw;
+      overflow: hidden;
+      animation: modalIn 150ms ease-out;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      padding: 24px 24px 20px;
+      border-bottom: 1px solid var(--border-default);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title { font-size: var(--Sizes-H3); font-weight: 500; color: var(--text-highlight); }
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: background 150ms ease;
+    }
+    .modal-close:hover { background: var(--background-secondary); }
+    .modal-close svg { width: 16px; height: 16px; stroke-width: 2; }
+
+    .modal-body { padding: 24px; }
+    .modal-sig-area {
+      border: 2px dashed var(--border-default);
+      border-radius: var(--radius-lg);
+      height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--text-inactive);
+      font-size: var(--Sizes-Small);
+      cursor: crosshair;
+      transition: border-color 150ms ease, background 150ms ease;
+    }
+    .modal-sig-area:hover {
+      border-color: var(--border-primary-subtle);
+      background: var(--background-accent-primary);
+    }
+    .modal-sig-area svg { width: 24px; height: 24px; stroke-width: 1.5; color: var(--text-inactive); }
+    .modal-legal {
+      font-size: var(--Sizes-Smaller);
+      color: var(--text-muted);
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+    .modal-footer {
+      padding: 16px 24px 24px;
+      display: flex;
+      gap: var(--spacing-components-xs);
+      justify-content: flex-end;
+    }
+    .btn-modal-cancel {
+      height: 44px;
+      padding: 0 24px;
+      border-radius: var(--radius-circle);
+      border: none;
+      background: var(--components-button-secondary);
+      color: var(--text-link);
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .btn-modal-cancel:hover { background: var(--components-button-secondary-hover); }
+    .btn-modal-submit {
+      height: 44px;
+      padding: 0 24px;
+      border-radius: var(--radius-circle);
+      border: none;
+      background: var(--background-contrast);
+      color: #fff;
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 150ms ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-modal-submit:hover { background: var(--background-gradients-alternative-start); }
+    .btn-modal-submit svg { width: 16px; height: 16px; stroke-width: 2; }
+
+    /* ─── CONTACT DRAWER ─────────────────────────────────── */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: var(--background-overlay);
+      z-index: 300;
+      display: none;
+    }
+    .drawer-backdrop.open { display: block; }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 450px;
+      max-width: 100vw;
+      background: var(--background-default);
+      box-shadow: 0 4px 36px rgba(0,0,0,0.15);
+      z-index: 400;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 200ms ease-in-out;
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      padding: 24px 32px 20px;
+      border-bottom: 1px solid var(--border-default);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .drawer-title { font-size: var(--Sizes-H3); font-weight: 500; color: var(--text-highlight); }
+    .drawer-subtitle { font-size: var(--Sizes-Body); color: var(--text-muted); margin-top: 2px; }
+    .drawer-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: background 150ms ease;
+    }
+    .drawer-close:hover { background: var(--background-secondary); }
+    .drawer-close svg { width: 16px; height: 16px; stroke-width: 2; }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .form-label {
+      font-size: var(--Sizes-Small);
+      font-weight: 500;
+      color: var(--text-default);
+    }
+    .form-input {
+      height: 48px;
+      padding: 0 var(--components-input-padding-normal);
+      border: 1px solid var(--components-input-border-default);
+      border-radius: var(--components-input-radius);
+      background: var(--components-input-background-default);
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      color: var(--components-input-content-default);
+      transition: border-color 150ms ease;
+      outline: none;
+    }
+    .form-input:hover { border-color: var(--components-input-border-hover); }
+    .form-input:focus { border-color: var(--components-input-border-active); }
+
+    .form-textarea {
+      padding: 12px;
+      border: 1px solid var(--components-input-border-default);
+      border-radius: var(--components-input-radius);
+      background: var(--components-input-background-default);
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      color: var(--components-input-content-default);
+      transition: border-color 150ms ease;
+      outline: none;
+      resize: none;
+      min-height: 120px;
+    }
+    .form-textarea:hover { border-color: var(--components-input-border-hover); }
+    .form-textarea:focus { border-color: var(--components-input-border-active); }
+
+    .drawer-footer {
+      padding: 16px 32px 24px;
+      border-top: 1px solid var(--border-default);
+      display: flex;
+      gap: var(--spacing-components-xs);
+      justify-content: flex-end;
+    }
+
+    /* ─── MOBILE NAV DRAWER ──────────────────────────────── */
+    .mobile-nav-drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: none;
+      pointer-events: none;
+    }
+    .mobile-nav-drawer.open {
+      display: block;
+      pointer-events: all;
+    }
+    .mobile-nav-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--background-overlay);
+    }
+    .mobile-nav-panel {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 80vw;
+      max-width: 320px;
+      background: #253040;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 200ms ease-in-out;
+    }
+    .mobile-nav-drawer.open .mobile-nav-panel {
+      transform: translateX(0);
+    }
+    .mobile-nav-header {
+      padding: 20px 16px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mobile-nav-title {
+      font-size: var(--Sizes-Small);
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .mobile-nav-close {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-nav-close svg { width: 16px; height: 16px; stroke-width: 2; }
+    .mobile-nav-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+
+    /* ─── MOBILE BOTTOM BAR ──────────────────────────────── */
+    .mobile-bottom-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--background-default);
+      border-top: 1px solid var(--border-default);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      z-index: 100;
+      gap: 12px;
+      align-items: center;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+    }
+    .mobile-bottom-info {
+      flex: 1;
+    }
+    .mobile-bottom-option { font-size: var(--Sizes-Smaller); color: var(--text-muted); }
+    .mobile-bottom-total { font-size: var(--Sizes-H4); font-weight: 500; color: var(--text-highlight); transition: all 200ms ease-in-out; }
+    .mobile-bottom-total.animating { opacity: 0.4; }
+    .mobile-nav-trigger {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-default);
+      background: var(--background-secondary);
+      color: var(--text-default);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .mobile-nav-trigger svg { width: 18px; height: 18px; stroke-width: 2; }
+    .mobile-sign-btn {
+      height: 44px;
+      padding: 0 20px;
+      border-radius: var(--radius-circle);
+      border: none;
+      background: var(--background-contrast);
+      color: #fff;
+      font-family: inherit;
+      font-size: var(--Sizes-Small);
+      font-weight: 500;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* ─── MOBILE SIGNING BAR ────────────────────────────── */
+    .mobile-bar-normal {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    .mobile-bar-signing {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex: 1;
+      gap: 8px;
+    }
+    body.signing-mode .mobile-bar-normal { display: none; }
+    body.signing-mode .mobile-bar-step1 { display: flex; }
+    body.signing-mode.signing-step2 .mobile-bar-step1 { display: none; }
+    body.signing-mode.signing-step2 .mobile-bar-step2 { display: flex; }
+
+    .mobile-bar-action-btn {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: var(--radius-circle);
+      border: 1px solid var(--border-default);
+      background: var(--background-secondary);
+      color: var(--text-default);
+      font-family: inherit;
+      font-size: var(--Sizes-Smaller);
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 150ms ease;
+    }
+    .mobile-bar-action-btn:hover { background: var(--background-hover); }
+    .mobile-bar-action-btn svg { width: 14px; height: 14px; stroke-width: 2; }
+    .mobile-bar-action-btn.primary {
+      background: var(--background-contrast);
+      color: #fff;
+      border-color: transparent;
+    }
+    .mobile-bar-action-btn.primary:hover { background: var(--background-gradients-alternative-start); }
+
+    .mobile-signing-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      flex: 1;
+    }
+    .mobile-signing-title {
+      font-size: var(--Sizes-Smaller);
+      font-weight: 500;
+      color: var(--text-default);
+    }
+    .mobile-signing-badge {
+      background: var(--roofr-blue);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 999px;
+    }
+
+    /* ─── SIGNING MODE ───────────────────────────────────── */
+    .topbar-normal { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; position: relative; }
+    .topbar-signing { display: none; align-items: center; justify-content: space-between; width: 100%; }
+    body.signing-mode .topbar-normal { display: none; }
+    body.signing-mode .topbar-signing { display: flex; }
+
+    .topbar-close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 150ms ease;
+      flex-shrink: 0;
+    }
+    .topbar-close-btn:hover { background: var(--background-secondary); }
+    .topbar-close-btn svg { width: 18px; height: 18px; stroke-width: 2; }
+
+    .topbar-review-sign {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      color: var(--text-default);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .topbar-review-sign-arrow {
+      color: var(--text-muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .topbar-review-sign-arrow:hover { color: var(--text-default); }
+
+    .review-step-badge {
+      background: var(--roofr-blue);
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: var(--Sizes-Smaller);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .topbar-btn-primary-disabled {
+      height: 40px;
+      padding: 0 20px;
+      border-radius: var(--radius-circle);
+      border: none;
+      background: var(--roofr-blue);
+      color: #fff;
+      font-family: inherit;
+      font-size: var(--Sizes-Body);
+      font-weight: 500;
+      cursor: default;
+      opacity: 0.55;
+    }
+    body.signing-step2 .topbar-btn-primary-disabled {
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    /* Floating Next button */
+    .signing-next-btn {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #F59E0B;
+      color: #fff;
+      border: none;
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      padding: 12px 14px;
+      font-family: inherit;
+      font-size: var(--Sizes-Small);
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 50;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      display: none;
+      letter-spacing: 0.03em;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+      transition: background 150ms ease;
+    }
+    .signing-next-btn:hover { background: #D97706; }
+    body.signing-mode .signing-next-btn { display: block; }
+    body.signing-mode.signing-step2 .signing-next-btn { display: none; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .summary-panel { display: none; }
+      .mobile-bottom-bar { display: flex; }
+      .preview-scroll-area { padding-bottom: 84px; }
+      .page-nav-bar { display: none; }
+      body.signing-mode .signing-next-btn { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      .topbar-center { display: none; }
+      .topbar-send-btn { display: none; }
+      .topbar-btn-secondary { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      .proposal-page { border-radius: 0; margin-bottom: 8px; }
+      .page-photo-grid { grid-template-columns: repeat(2, 1fr); }
+      .estimate-page-body { padding: 24px 20px 32px; }
+      .page-section-header { padding: 20px 20px 16px; }
+      .cover-body { padding: 20px 20px 20px; }
+    }
+
+    /* ─── SUMMARY CARD STATES ───────────────────────────── */
+    /* sc-multi and sc-empty are hidden by default (state-single is default) */
+    .sc-multi, .sc-empty { display: none; }
+
+    .summary-card.state-multi .sc-single,
+    .summary-card.state-multi .sc-empty { display: none; }
+    .summary-card.state-multi .sc-multi { display: block; }
+
+    .summary-card.state-empty .sc-single,
+    .summary-card.state-empty .sc-multi { display: none; }
+    .summary-card.state-empty .sc-empty { display: block; }
+
+    /* Multi-select option list */
+    .summary-option-list {
+      margin: 8px 0 4px;
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .summary-option-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-default);
+    }
+    .summary-option-row:last-child { border-bottom: none; }
+    .summary-option-row-name {
+      font-size: var(--Sizes-Smaller);
+      color: var(--text-default);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 8px;
+    }
+    .summary-option-row-price {
+      font-size: var(--Sizes-Smaller);
+      font-weight: 600;
+      color: var(--text-highlight);
+      white-space: nowrap;
+    }
+    .summary-combined-label {
+      font-size: var(--Sizes-Smaller);
+      color: var(--text-muted);
+      margin-top: 10px;
+      margin-bottom: 2px;
+    }
+
+    /* Empty state */
+    .summary-empty-hint {
+      font-size: var(--Sizes-Small);
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    .summary-card.state-empty .sign-btn {
+      opacity: 0.35;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ─── MOBILE SIM (desktop preview of mobile layout) ─── */
+    body.mobile-sim .sidebar { display: none !important; }
+    body.mobile-sim .summary-panel { display: none !important; }
+    body.mobile-sim .mobile-bottom-bar { display: flex !important; }
+    body.mobile-sim .preview-scroll-area { padding-bottom: 84px !important; }
+    body.mobile-sim .page-nav-bar { display: none !important; }
+    body.mobile-sim.signing-mode .signing-next-btn { display: none !important; }
+    body.mobile-sim .topbar-center { display: none; }
+    body.mobile-sim .topbar-send-btn { display: none; }
+    body.mobile-sim .topbar-btn-secondary { display: none; }
+    body.mobile-sim .proposal-page { border-radius: 0; margin-bottom: 8px; }
+    body.mobile-sim .estimate-page-body { padding: 24px 20px 32px; }
+    body.mobile-sim .page-section-header { padding: 20px 20px 16px; }
+    body.mobile-sim .cover-body { padding: 20px 20px 20px; }
+  </style>
+</head>
+<body class="contractor-mode">
+
+  <!-- PROTOTYPE CONTROLS -->
+  <div class="proto-bar">
+    <span class="proto-chip">Prototype</span>
+    <div class="proto-divider"></div>
+    <div class="proto-group">
+      <span class="proto-group-label">Mode</span>
+      <div class="proto-toggle" id="modeToggle">
+        <button class="proto-btn active" onclick="setMode('contractor', this)">Contractor</button>
+        <button class="proto-btn" onclick="setMode('homeowner', this)">Homeowner</button>
+      </div>
+    </div>
+    <div class="proto-divider"></div>
+    <div class="proto-group">
+      <span class="proto-group-label">Device</span>
+      <div class="proto-toggle" id="deviceToggle">
+        <button class="proto-btn active" onclick="setDevice('desktop', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Desktop
+        </button>
+        <button class="proto-btn" onclick="setDevice('mobile', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          Mobile
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+
+    <!-- Normal mode -->
+    <div class="topbar-normal">
+      <button class="topbar-btn-link topbar-back-btn" onclick="history.back()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg>
+        Edit
+      </button>
+
+      <span class="topbar-center">Preview proposal</span>
+
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="topbar-icon-btn" title="Download PDF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <!-- Contractor: Sign now (secondary) + Send proposal -->
+        <button class="topbar-btn-secondary" onclick="enterSigningMode()">Sign now</button>
+        <button class="topbar-btn-primary topbar-send-btn">Send proposal</button>
+        <!-- Homeowner: Sign now (primary) only -->
+        <button class="topbar-btn-primary topbar-sign-primary" onclick="enterSigningMode()">Sign now</button>
+      </div>
+    </div>
+
+    <!-- Signing mode -->
+    <div class="topbar-signing">
+      <button class="topbar-close-btn" onclick="exitSigningMode()" title="Exit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <div class="topbar-review-sign">
+        <button class="topbar-review-sign-arrow" onclick="signingPrev()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        Review &amp; sign
+        <span class="review-step-badge" id="signingStepBadge">1/2</span>
+        <button class="topbar-review-sign-arrow" onclick="signingNext()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="topbar-icon-btn" title="Download PDF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="topbar-btn-primary-disabled" id="finishBtn" onclick="handleFinish()">Finish</button>
+      </div>
+    </div>
+
+  </header>
+
+  <!-- SIDEBAR MENU BUTTON (shown when collapsed) -->
+  <button class="sidebar-menu-btn" id="sidebarMenuBtn" onclick="expandSidebar()" title="Show pages">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+
+  <!-- SIGNING NEXT BUTTON -->
+  <button class="signing-next-btn" id="signingNextBtn" onclick="signingNext()">Next</button>
+
+  <!-- MAIN LAYOUT -->
+  <div class="preview-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <span class="sidebar-label">Pages</span>
+          <button class="sidebar-collapse-btn" onclick="collapseSidebar()" title="Collapse sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+        <nav class="sidebar-nav" id="sidebarNav">
+          <!-- Populated by JS -->
+        </nav>
+      </div>
+    </aside>
+
+    <!-- SCROLL AREA -->
+    <div class="preview-scroll-area" id="scrollArea">
+
+      <!-- COVER PAGE -->
+      <section class="proposal-page" id="page-cover" data-page="0">
+        <div class="page-cover">
+          <div class="cover-photo">
+            <div class="cover-shingle-pattern"></div>
+            <div class="cover-roofr-badge">GAF Certified</div>
+          </div>
+          <div class="cover-body">
+            <div>
+              <div class="cover-title">Roof Replacement<br>Proposal</div>
+              <div class="cover-date">June 9, 2026</div>
+            </div>
+            <div class="cover-right">
+              <div class="cover-company">Elite Team Roofers</div>
+              <div class="cover-contact">
+                branch@roofr.com<br>
+                608 Belmont Street<br>
+                New Westminster, BC V3M 0G8
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OPTION 1: GOOD -->
+      <section class="proposal-page" id="page-good" data-page="1" data-total="11800">
+        <div class="estimate-page-body">
+          <div class="estimate-accent-bar"></div>
+          <h2 class="estimate-title">Good</h2>
+          <div class="estimate-col-headers"><span>Item</span><span>Subtotal</span></div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Tear-off &amp; Disposal</div>
+              <div class="estimate-item-desc">Remove existing shingles, felt, and debris</div>
+            </div>
+            <div class="estimate-item-price">$1,800</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Owens Corning Duration Shingles</div>
+              <div class="estimate-item-desc">Architectural shingle, 30-yr limited warranty — Estate Gray</div>
+            </div>
+            <div class="estimate-item-price">$7,560</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Underlayment &amp; Ice &amp; Water Shield</div>
+              <div class="estimate-item-desc">Synthetic underlayment, full eave coverage</div>
+            </div>
+            <div class="estimate-item-price">$980</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Ridge Cap &amp; Ventilation</div>
+              <div class="estimate-item-desc">Hip &amp; ridge cap shingles, continuous ridge vent</div>
+            </div>
+            <div class="estimate-item-price">$760</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Flashing &amp; Sealants</div>
+              <div class="estimate-item-desc">Step, valley, and chimney flashing replacement</div>
+            </div>
+            <div class="estimate-item-price">$700</div>
+          </div>
+          <div class="estimate-subtotal-row">
+            <span>Estimate subtotal</span>
+            <span>$11,800</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- OPTION 2: BETTER -->
+      <section class="proposal-page" id="page-better" data-page="2" data-total="14200">
+        <div class="estimate-page-body">
+          <div class="estimate-accent-bar"></div>
+          <h2 class="estimate-title">Better</h2>
+          <div class="estimate-col-headers"><span>Item</span><span>Subtotal</span></div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Tear-off &amp; Disposal</div>
+              <div class="estimate-item-desc">Remove existing shingles, felt, and debris</div>
+            </div>
+            <div class="estimate-item-price">$1,800</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">CertainTeed Landmark Shingles</div>
+              <div class="estimate-item-desc">Dual-layer architectural shingle, StreakFighter technology — Heather Blend</div>
+            </div>
+            <div class="estimate-item-price">$9,240</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">CertainTeed WinterGuard Underlayment</div>
+              <div class="estimate-item-desc">Self-adhering membrane, full eave &amp; valley coverage</div>
+            </div>
+            <div class="estimate-item-price">$1,200</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Ridge Cap &amp; Ventilation</div>
+              <div class="estimate-item-desc">CertainTeed Ridge Cap, continuous ridge vent</div>
+            </div>
+            <div class="estimate-item-price">$960</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Flashing, Drip Edge &amp; Sealants</div>
+              <div class="estimate-item-desc">Aluminum drip edge all perimeter, step &amp; chimney flashing</div>
+            </div>
+            <div class="estimate-item-price">$1,000</div>
+          </div>
+          <div class="estimate-subtotal-row">
+            <span>Estimate subtotal</span>
+            <span>$14,200</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- OPTION 3: BEST -->
+      <section class="proposal-page" id="page-best" data-page="3" data-total="18500">
+        <div class="estimate-page-body">
+          <div class="estimate-accent-bar"></div>
+          <h2 class="estimate-title">Best</h2>
+          <div class="estimate-col-headers"><span>Item</span><span>Subtotal</span></div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Tear-off &amp; Disposal</div>
+              <div class="estimate-item-desc">Remove existing shingles, felt, and debris</div>
+            </div>
+            <div class="estimate-item-price">$1,800</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">GAF Timberline HDZ Shingles</div>
+              <div class="estimate-item-desc">LayerLock technology, Class 4 impact-resistant, Lifetime warranty — Charcoal</div>
+            </div>
+            <div class="estimate-item-price">$12,600</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">GAF WeatherWatch &amp; FeltBuster</div>
+              <div class="estimate-item-desc">Mineral-surface leak barrier + synthetic underlayment</div>
+            </div>
+            <div class="estimate-item-price">$1,500</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">TimberTex Ridge Cap &amp; Ventilation</div>
+              <div class="estimate-item-desc">Premium ridge cap shingles, Cobra continuous vent</div>
+            </div>
+            <div class="estimate-item-price">$1,400</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">GAF System Plus Warranty Upgrade</div>
+              <div class="estimate-item-desc">Lifetime limited warranty on all components</div>
+            </div>
+            <div class="estimate-item-price">$700</div>
+          </div>
+          <div class="estimate-item">
+            <div class="estimate-item-info">
+              <div class="estimate-item-name">Flashing, Drip Edge &amp; Sealants</div>
+              <div class="estimate-item-desc">Aluminum drip edge, step, valley, &amp; chimney flashing</div>
+            </div>
+            <div class="estimate-item-price">$500</div>
+          </div>
+          <div class="estimate-subtotal-row">
+            <span>Estimate subtotal</span>
+            <span>$18,500</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUMMARY / SIGNING SELECTION PAGE -->
+      <section class="proposal-page" id="page-summary" data-page="4">
+        <div class="estimate-page-body">
+          <div class="estimate-accent-bar"></div>
+          <h2 class="estimate-title">Summary</h2>
+          <p class="summary-instructions">Please select one or more options from this proposal, then select any associated upgrades, and sign it with any notes</p>
+
+          <!-- Good option row -->
+          <div class="selection-option-row">
+            <input type="checkbox" class="selection-checkbox" id="chk-good" onchange="updateSelectionTotal()">
+            <div class="selection-option-content">
+              <label class="selection-option-name" for="chk-good">Owens Corning Duration</label>
+            </div>
+            <div class="selection-option-right">
+              <div class="selection-option-price">$11,800</div>
+              <button class="selection-view-details" onclick="scrollToPage(1)">View details</button>
+            </div>
+          </div>
+
+          <!-- Better option row -->
+          <div class="selection-option-row">
+            <input type="checkbox" class="selection-checkbox" id="chk-better" onchange="updateSelectionTotal()">
+            <div class="selection-option-content">
+              <label class="selection-option-name" for="chk-better">CertainTeed Landmark</label>
+            </div>
+            <div class="selection-option-right">
+              <div class="selection-option-price">$14,200</div>
+              <button class="selection-view-details" onclick="scrollToPage(2)">View details</button>
+            </div>
+          </div>
+
+          <!-- Best option row -->
+          <div class="selection-option-row">
+            <input type="checkbox" class="selection-checkbox" id="chk-best" onchange="updateSelectionTotal()">
+            <div class="selection-option-content">
+              <label class="selection-option-name" for="chk-best">GAF Timberline HDZ</label>
+            </div>
+            <div class="selection-option-right">
+              <div class="selection-option-price">$18,500</div>
+              <button class="selection-view-details" onclick="scrollToPage(3)">View details</button>
+            </div>
+          </div>
+
+          <!-- Totals -->
+          <div class="selection-totals-area">
+            <div class="selection-tax-note">*Applicable sales taxes will be calculated and collected at final billing</div>
+            <div class="selection-totals">
+              <div class="selection-total-row"><span>Subtotal</span><span id="selectionSubtotal">$0</span></div>
+              <div class="selection-total-row"><span>Estimated sales tax</span><span id="selectionTax">$0</span></div>
+              <div class="selection-total-row grand"><span>Total</span><span id="selectionTotal">$0</span></div>
+            </div>
+          </div>
+
+          <!-- Customer notes -->
+          <div class="customer-notes-section">
+            <div class="customer-notes-label">Customer notes</div>
+            <textarea class="customer-notes-input" placeholder="(Optional) Enter notes"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT US -->
+      <section class="proposal-page" id="page-about" data-page="5">
+        <div class="page-section-header">
+          <div class="section-tag">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            About
+          </div>
+          <div class="section-title">About Elite Team Roofers</div>
+        </div>
+        <div class="page-content">
+          <div class="page-body-text">
+            <p>Elite Team Roofers has been serving the Lower Mainland since 2004. We're a family-owned operation built on the belief that every homeowner deserves a roof they can count on — installed right, the first time.</p>
+            <p>We hold GAF Master Elite certification (top 2% of roofers in Canada) and carry full WCB coverage and $5M liability insurance. Our crews are in-house, not subcontracted, so quality is consistent on every job we take.</p>
+            <p>We've completed over 3,400 residential and commercial roofing projects across Metro Vancouver, the Fraser Valley, and the Tri-Cities. Our average Google rating is 4.9/5 across 800+ reviews.</p>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;">
+            <div style="background:var(--background-secondary);border-radius:var(--radius-lg);padding:16px;text-align:center;">
+              <div style="font-size:24px;font-weight:500;color:var(--roofr-blue);">3,400+</div>
+              <div style="font-size:var(--Sizes-Smaller);color:var(--text-muted);margin-top:2px;">Jobs completed</div>
+            </div>
+            <div style="background:var(--background-secondary);border-radius:var(--radius-lg);padding:16px;text-align:center;">
+              <div style="font-size:24px;font-weight:500;color:var(--roofr-blue);">20 yr</div>
+              <div style="font-size:var(--Sizes-Smaller);color:var(--text-muted);margin-top:2px;">In business</div>
+            </div>
+            <div style="background:var(--background-secondary);border-radius:var(--radius-lg);padding:16px;text-align:center;">
+              <div style="font-size:24px;font-weight:500;color:var(--roofr-blue);">4.9★</div>
+              <div style="font-size:var(--Sizes-Smaller);color:var(--text-muted);margin-top:2px;">Google rating</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TERMS -->
+      <section class="proposal-page" id="page-terms" data-page="6">
+        <div class="page-section-header">
+          <div class="section-tag">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Terms
+          </div>
+          <div class="section-title">Terms &amp; Conditions</div>
+        </div>
+        <div class="page-content">
+          <div class="page-body-text">
+            <p><strong>Payment:</strong> 30% deposit due upon signing. Remaining balance due upon project completion. We accept e-transfer, cheque, Visa, and Mastercard. A 2.8% processing fee applies to credit card payments.</p>
+            <p><strong>Scheduling:</strong> Work will be scheduled within 10–14 business days of deposit receipt. Weather delays may affect the start date. We will notify you of any changes no later than 24 hours in advance.</p>
+            <p><strong>Scope of work:</strong> This proposal covers the scope outlined above. Any additional work discovered during the project (e.g. rotted decking, damaged fascia) will be documented, quoted, and approved before proceeding.</p>
+            <p><strong>Clean-up:</strong> All debris will be removed from the property daily. A magnetic sweep will be performed after the job is complete. We carry waste manifest documentation for all material disposal.</p>
+            <p><strong>Cancellation:</strong> If the project is cancelled after deposit, a 15% administration fee will be deducted from any refund. Cancellations within 48 hours of the scheduled start date forfeit the full deposit.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- WARRANTIES -->
+      <section class="proposal-page" id="page-warranties" data-page="7">
+        <div class="page-section-header">
+          <div class="section-tag">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Warranties
+          </div>
+          <div class="section-title">Warranty Coverage</div>
+          <div class="section-subtitle">All warranties transfer to new owner upon sale of property</div>
+        </div>
+        <div style="padding:16px 0 24px;">
+          <div class="warranty-card">
+            <div class="warranty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+              <div class="warranty-name">Manufacturer Material Warranty</div>
+              <div class="warranty-desc">Lifetime limited warranty on shingles and system components. Covers manufacturing defects and premature granule loss.</div>
+            </div>
+          </div>
+          <div class="warranty-card">
+            <div class="warranty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+              <div class="warranty-name">Elite Team Workmanship Warranty</div>
+              <div class="warranty-desc">5-year warranty on all labour and installation. We stand behind our work — if it leaks due to installation error, we fix it, no questions.</div>
+            </div>
+          </div>
+          <div class="warranty-card">
+            <div class="warranty-icon" style="background:var(--background-accent-primary);color:var(--roofr-blue);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="warranty-name">Annual Inspection Offer</div>
+              <div class="warranty-desc">Free roof inspection in years 1 and 3 after installation. We'll check flashing, sealants, and any wear points proactively.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INSPECTION PHOTOS -->
+      <section class="proposal-page" id="page-inspection" data-page="8">
+        <div class="page-section-header">
+          <div class="section-tag">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Inspection
+          </div>
+          <div class="section-title">Inspection Photos</div>
+          <div class="section-subtitle">Taken during site visit on June 4, 2026</div>
+        </div>
+        <div class="page-photo-grid">
+          <!-- Photo placeholders with colored backgrounds -->
+          <div class="photo-thumb" style="background:linear-gradient(135deg,#c8d8e8,#a0b4c8);">
+            <div class="photo-thumb-inner" style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:6px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span style="font-size:9px;color:rgba(0,0,0,0.4);font-weight:500;">North Ridge</span>
+            </div>
+          </div>
+          <div class="photo-thumb" style="background:linear-gradient(135deg,#d4c8b8,#b8a898);">
+            <div class="photo-thumb-inner" style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:6px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span style="font-size:9px;color:rgba(0,0,0,0.4);font-weight:500;">Chimney Flashing</span>
+            </div>
+          </div>
+          <div class="photo-thumb" style="background:linear-gradient(135deg,#c8d4c8,#a0b4a0);">
+            <div class="photo-thumb-inner" style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:6px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span style="font-size:9px;color:rgba(0,0,0,0.4);font-weight:500;">South Slope</span>
+            </div>
+          </div>
+          <div class="photo-thumb" style="background:linear-gradient(135deg,#e8c8c8,#c8a0a0);">
+            <div class="photo-thumb-inner" style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:6px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span style="font-size:9px;color:rgba(0,0,0,0.4);font-weight:500;">Granule Loss</span>
+            </div>
+          </div>
+          <div class="photo-thumb" style="background:linear-gradient(135deg,#d4d8c8,#b4b8a0);">
+            <div class="photo-thumb-inner" style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:6px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span style="font-size:9px;color:rgba(0,0,0,0.4);font-weight:500;">Valley Detail</span>
+            </div>
+          </div>
+          <div class="photo-thumb" style="background:linear-gradient(135deg,#c8ccd8,#a0a4b8);">
+            <div class="photo-thumb-inner" style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:6px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span style="font-size:9px;color:rgba(0,0,0,0.4);font-weight:500;">Vent Boots</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BEFORE & AFTER -->
+      <section class="proposal-page" id="page-beforeafter" data-page="9">
+        <div class="page-section-header">
+          <div class="section-tag">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Portfolio
+          </div>
+          <div class="section-title">Before &amp; After</div>
+          <div class="section-subtitle">Recent jobs similar to yours</div>
+        </div>
+        <div style="padding:0 32px 24px;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+          <div>
+            <div style="font-size:var(--Sizes-Smaller);font-weight:500;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Before</div>
+            <div style="aspect-ratio:4/3;border-radius:var(--radius-lg);background:linear-gradient(135deg,#9a8878,#7a6858);display:flex;align-items:center;justify-content:center;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:var(--Sizes-Smaller);font-weight:500;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">After</div>
+            <div style="aspect-ratio:4/3;border-radius:var(--radius-lg);background:linear-gradient(135deg,#4a6741,#2d4a28);display:flex;align-items:center;justify-content:center;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SIGNATURE PAGE -->
+      <section class="proposal-page" id="page-signature" data-page="10">
+        <div class="page-section-header">
+          <div class="section-tag">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Signature
+          </div>
+          <div class="section-title">Sign to Accept</div>
+          <div class="section-subtitle">By signing, you accept the selected option and the terms above</div>
+        </div>
+        <div class="sig-area" onclick="openSignModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Click to sign
+        </div>
+        <div class="sig-meta">
+          <div class="sig-field">
+            <div class="sig-field-label">Customer</div>
+            <div class="sig-field-value">Jim McMahon</div>
+          </div>
+          <div class="sig-field">
+            <div class="sig-field-label">Date</div>
+            <div class="sig-field-value">—</div>
+          </div>
+          <div class="sig-field">
+            <div class="sig-field-label">Selected option</div>
+            <div class="sig-field-value" id="sigSelectedOption">CertainTeed Landmark</div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /scroll area -->
+
+    <!-- RIGHT SUMMARY PANEL -->
+    <aside class="summary-panel">
+      <div class="summary-card state-single" id="summaryCard">
+
+        <!-- State: single option selected -->
+        <div class="summary-card-header sc-single">
+          <div class="summary-label">SELECTED OPTION</div>
+          <div class="summary-option-name" id="panelOptionName">Better Option</div>
+          <div class="summary-total" id="panelTotal">$14,200</div>
+        </div>
+
+        <!-- State: multiple options selected -->
+        <div class="summary-card-header sc-multi">
+          <div class="summary-label">SELECTED OPTIONS</div>
+          <div class="summary-option-list" id="summaryOptionList"></div>
+          <div class="summary-combined-label">Combined total</div>
+          <div class="summary-total" id="panelTotalMulti">—</div>
+        </div>
+
+        <!-- State: nothing selected -->
+        <div class="summary-card-header sc-empty">
+          <div class="summary-label">NO OPTION SELECTED</div>
+          <div class="summary-empty-hint">Select an option on the summary page to continue.</div>
+        </div>
+
+        <div class="summary-divider"></div>
+        <div class="summary-card-body">
+          <button class="btn-primary sign-btn" onclick="enterSigningMode()">
+            Sign now
+          </button>
+          <button class="btn-view-options contact-btn" onclick="openContactDrawer()">
+            View all options
+          </button>
+        </div>
+      </div>
+    </aside>
+
+  </div><!-- /preview-layout -->
+
+  <!-- PAGE NAV BAR -->
+  <div class="page-nav-bar">
+    <div class="page-nav-pill">
+      <button class="nav-arrow-btn" id="prevBtn" onclick="navigatePage(-1)" title="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="page-nav-counter" id="pageCounter">Page 1 of 11</span>
+      <button class="nav-arrow-btn" id="nextBtn" onclick="navigatePage(1)" title="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM BAR -->
+  <div class="mobile-bottom-bar" id="mobileBottomBar">
+    <!-- Normal state -->
+    <div class="mobile-bar-normal">
+      <button class="mobile-nav-trigger" onclick="openMobileNav()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="mobile-bottom-info">
+        <div class="mobile-bottom-option" id="mobileOptionName">CertainTeed Landmark</div>
+        <div class="mobile-bottom-total" id="mobileTotal">$14,200</div>
+      </div>
+      <button class="mobile-sign-btn" onclick="enterSigningMode()">Sign now</button>
+    </div>
+    <!-- Signing step 1 -->
+    <div class="mobile-bar-signing mobile-bar-step1">
+      <button class="mobile-bar-action-btn" onclick="exitSigningMode()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Exit
+      </button>
+      <div class="mobile-signing-info">
+        <div class="mobile-signing-title">Review &amp; sign</div>
+        <div class="mobile-signing-badge">Step 1 of 2</div>
+      </div>
+      <button class="mobile-bar-action-btn primary" onclick="signingNext()">
+        Next
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <!-- Signing step 2 -->
+    <div class="mobile-bar-signing mobile-bar-step2">
+      <button class="mobile-bar-action-btn" onclick="signingPrev()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="mobile-signing-info">
+        <div class="mobile-signing-title">Review &amp; sign</div>
+        <div class="mobile-signing-badge">Step 2 of 2</div>
+      </div>
+      <button class="mobile-bar-action-btn primary" onclick="handleFinish()">
+        Finish
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- SIGN MODAL -->
+  <div class="modal-backdrop" id="signModal" onclick="closeSignModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">Sign proposal</div>
+        <button class="modal-close" onclick="closeSignModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:var(--Sizes-Small);color:var(--text-muted);margin-bottom:12px;">
+          You're accepting <strong id="modalOptionText" style="color:var(--text-default);">CertainTeed Landmark</strong> for <strong id="modalTotalText" style="color:var(--text-default);">$14,200</strong>
+        </div>
+        <div class="modal-sig-area">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Draw your signature here
+        </div>
+        <div class="modal-legal">By clicking "Accept proposal" you agree to the terms and conditions outlined in this proposal and authorize Elite Team Roofers to proceed with the selected scope of work.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" onclick="closeSignModal()">Cancel</button>
+        <button class="btn-modal-submit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+          Accept proposal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT DRAWER BACKDROP -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeContactDrawer()"></div>
+
+  <!-- CONTACT DRAWER -->
+  <div class="drawer" id="contactDrawer">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-title">Contact Elite Team Roofers</div>
+        <div class="drawer-subtitle">We'll get back to you within one business day</div>
+      </div>
+      <button class="drawer-close" onclick="closeContactDrawer()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-field">
+        <label class="form-label">Your name</label>
+        <input class="form-input" type="text" value="Jim McMahon" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Your email</label>
+        <input class="form-input" type="email" value="jim.mcmahon@gmail.com" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Subject</label>
+        <input class="form-input" type="text" value="Question about Proposal — McMahon Residence" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Message</label>
+        <textarea class="form-textarea" placeholder="Write your message here..."></textarea>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn-modal-cancel" onclick="closeContactDrawer()">Cancel</button>
+      <button class="btn-modal-submit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Send message
+      </button>
+    </div>
+  </div>
+
+  <!-- MOBILE NAV DRAWER -->
+  <div class="mobile-nav-drawer" id="mobileNavDrawer">
+    <div class="mobile-nav-overlay" onclick="closeMobileNav()"></div>
+    <div class="mobile-nav-panel">
+      <div class="mobile-nav-header">
+        <span class="mobile-nav-title">Pages</span>
+        <button class="mobile-nav-close" onclick="closeMobileNav()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <nav class="mobile-nav-list" id="mobileNavList">
+        <!-- Populated by JS -->
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    // Page data
+    const pages = [
+      { id: 'page-cover',      label: 'Cover Page' },
+      { id: 'page-good',       label: 'Good' },
+      { id: 'page-better',     label: 'Better' },
+      { id: 'page-best',       label: 'Best' },
+      { id: 'page-summary',    label: 'Summary' },
+      { id: 'page-about',      label: 'About Us' },
+      { id: 'page-terms',      label: 'Terms & Conditions' },
+      { id: 'page-warranties', label: 'Warranties' },
+      { id: 'page-inspection', label: 'Inspection Photos' },
+      { id: 'page-beforeafter', label: 'Before & After' },
+      { id: 'page-signature',  label: 'Signature' },
+    ];
+
+    let currentPage = 0;
+    let selectedOption = { name: 'CertainTeed Landmark', total: 14200 };
+    let scrollLocked = false;
+
+    // Build sidebar
+    function buildSidebar() {
+      const nav = document.getElementById('sidebarNav');
+      const mobileNav = document.getElementById('mobileNavList');
+      nav.innerHTML = '';
+      mobileNav.innerHTML = '';
+
+      pages.forEach((page, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-item' + (i === 0 ? ' active' : '');
+        btn.dataset.index = i;
+        btn.innerHTML = `
+          <span class="nav-item-num">${i + 1}.</span>
+          <span class="nav-item-label">${page.label}</span>
+          <svg class="nav-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        `;
+        btn.addEventListener('click', () => scrollToPage(i));
+        nav.appendChild(btn);
+
+        const mBtn = btn.cloneNode(true);
+        mBtn.addEventListener('click', () => { scrollToPage(i); closeMobileNav(); });
+        mobileNav.appendChild(mBtn);
+      });
+    }
+
+    function setActiveNavItem(index) {
+      currentPage = index;
+      document.querySelectorAll('.nav-item').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+      updatePageCounter(index);
+    }
+
+    function scrollToPage(index) {
+      const pageEl = document.getElementById(pages[index].id);
+      if (!pageEl) return;
+      scrollLocked = true;
+      pageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveNavItem(index);
+      setTimeout(() => { scrollLocked = false; }, 600);
+    }
+
+    function navigatePage(dir) {
+      const next = Math.max(0, Math.min(pages.length - 1, currentPage + dir));
+      scrollToPage(next);
+    }
+
+    function updatePageCounter(index) {
+      const counter = document.getElementById('pageCounter');
+      counter.textContent = `Page ${index + 1} of ${pages.length}`;
+      document.getElementById('prevBtn').disabled = index === 0;
+      document.getElementById('nextBtn').disabled = index === pages.length - 1;
+    }
+
+    // Intersection observer for scroll tracking
+    function setupObserver() {
+      const scrollArea = document.getElementById('scrollArea');
+      const observer = new IntersectionObserver((entries) => {
+        if (scrollLocked) return;
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const idx = parseInt(entry.target.dataset.page);
+            if (!isNaN(idx)) setActiveNavItem(idx);
+          }
+        });
+      }, {
+        root: scrollArea,
+        threshold: 0.35,
+      });
+
+      pages.forEach(p => {
+        const el = document.getElementById(p.id);
+        if (el) observer.observe(el);
+      });
+    }
+
+    // Selection total (summary page checkboxes)
+    const optionValues = { 'chk-good': 11800, 'chk-better': 14200, 'chk-best': 18500 };
+    const optionNames = { 'chk-good': 'Owens Corning Duration', 'chk-better': 'CertainTeed Landmark', 'chk-best': 'GAF Timberline HDZ' };
+
+    function updateSelectionTotal() {
+      let subtotal = 0;
+      let selectedItems = [];
+      Object.keys(optionValues).forEach(id => {
+        const cb = document.getElementById(id);
+        if (cb && cb.checked) {
+          subtotal += optionValues[id];
+          selectedItems.push({ name: optionNames[id], value: optionValues[id] });
+        }
+      });
+      const tax = Math.round(subtotal * 0.1);
+      const total = subtotal + tax;
+      document.getElementById('selectionSubtotal').textContent = '$' + subtotal.toLocaleString();
+      document.getElementById('selectionTax').textContent = '$' + tax.toLocaleString();
+      document.getElementById('selectionTotal').textContent = '$' + total.toLocaleString();
+
+      updateSummaryPanel(selectedItems, subtotal);
+    }
+
+    function updateSummaryPanel(items, total) {
+      const card = document.getElementById('summaryCard');
+      const mobileTotal = document.getElementById('mobileTotal');
+      const mobileName = document.getElementById('mobileOptionName');
+
+      mobileTotal.classList.add('animating');
+
+      setTimeout(() => {
+        if (items.length === 0) {
+          card.className = 'summary-card state-empty';
+          mobileTotal.textContent = '—';
+          mobileName.textContent = 'No option selected';
+
+        } else if (items.length === 1) {
+          card.className = 'summary-card state-single';
+          document.getElementById('panelOptionName').textContent = items[0].name;
+          const pt = document.getElementById('panelTotal');
+          pt.classList.add('animating');
+          pt.textContent = '$' + total.toLocaleString();
+          setTimeout(() => pt.classList.remove('animating'), 0);
+          mobileTotal.textContent = '$' + total.toLocaleString();
+          mobileName.textContent = items[0].name;
+
+        } else {
+          card.className = 'summary-card state-multi';
+          const list = document.getElementById('summaryOptionList');
+          list.innerHTML = items.map(item =>
+            `<div class="summary-option-row">
+               <span class="summary-option-row-name">${item.name}</span>
+               <span class="summary-option-row-price">$${item.value.toLocaleString()}</span>
+             </div>`
+          ).join('');
+          const ptm = document.getElementById('panelTotalMulti');
+          ptm.classList.add('animating');
+          ptm.textContent = '$' + total.toLocaleString();
+          setTimeout(() => ptm.classList.remove('animating'), 0);
+          mobileTotal.textContent = '$' + total.toLocaleString();
+          mobileName.textContent = `${items.length} options selected`;
+        }
+
+        mobileTotal.classList.remove('animating');
+      }, 120);
+
+      const name = items.length === 1 ? items[0].name
+        : items.length > 1 ? `${items.length} options selected`
+        : 'No option selected';
+      selectedOption = { name, total };
+      document.getElementById('sigSelectedOption').textContent = name;
+      document.getElementById('modalOptionText').textContent = name;
+      document.getElementById('modalTotalText').textContent = total > 0 ? '$' + total.toLocaleString() : '—';
+    }
+
+    // Sidebar collapse
+    function collapseSidebar() {
+      document.getElementById('sidebar').classList.add('collapsed');
+      document.getElementById('sidebarMenuBtn').style.display = 'flex';
+    }
+    function expandSidebar() {
+      document.getElementById('sidebar').classList.remove('collapsed');
+      document.getElementById('sidebarMenuBtn').style.display = 'none';
+    }
+
+    // Signing mode
+    let signingStep = 1;
+
+    function enterSigningMode() {
+      signingStep = 1;
+      document.body.classList.add('signing-mode');
+      document.body.classList.remove('signing-step2');
+      document.getElementById('signingStepBadge').textContent = '1/2';
+      scrollToPage(4); // go to Summary page
+    }
+
+    function exitSigningMode() {
+      document.body.classList.remove('signing-mode', 'signing-step2');
+      signingStep = 1;
+    }
+
+    function signingNext() {
+      if (!document.body.classList.contains('signing-mode')) return;
+      if (signingStep === 1) {
+        signingStep = 2;
+        document.body.classList.add('signing-step2');
+        document.getElementById('signingStepBadge').textContent = '2/2';
+        scrollToPage(10); // signature page
+      }
+    }
+
+    function signingPrev() {
+      if (!document.body.classList.contains('signing-mode')) return;
+      if (signingStep === 2) {
+        signingStep = 1;
+        document.body.classList.remove('signing-step2');
+        document.getElementById('signingStepBadge').textContent = '1/2';
+        scrollToPage(4);
+      }
+    }
+
+    function handleFinish() {
+      if (!document.body.classList.contains('signing-step2')) return;
+      openSignModal();
+    }
+
+    // Modal
+    function openSignModal() {
+      document.getElementById('signModal').classList.add('open');
+      document.getElementById('modalOptionText').textContent = selectedOption.name;
+      document.getElementById('modalTotalText').textContent = '$' + selectedOption.total.toLocaleString();
+    }
+    function closeSignModal(e) {
+      if (!e || e.target === document.getElementById('signModal')) {
+        document.getElementById('signModal').classList.remove('open');
+      }
+    }
+
+    // Contact drawer
+    function openContactDrawer() {
+      document.getElementById('contactDrawer').classList.add('open');
+      document.getElementById('drawerBackdrop').classList.add('open');
+    }
+    function closeContactDrawer() {
+      document.getElementById('contactDrawer').classList.remove('open');
+      document.getElementById('drawerBackdrop').classList.remove('open');
+    }
+
+    // Mobile nav
+    function openMobileNav() {
+      document.getElementById('mobileNavDrawer').classList.add('open');
+    }
+    function closeMobileNav() {
+      document.getElementById('mobileNavDrawer').classList.remove('open');
+    }
+
+    // Mode toggle
+    function setMode(mode, btn) {
+      document.querySelectorAll('#modeToggle .proto-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (mode === 'contractor') {
+        document.body.classList.add('contractor-mode');
+        document.body.classList.remove('homeowner-mode');
+      } else {
+        document.body.classList.remove('contractor-mode');
+        document.body.classList.add('homeowner-mode');
+      }
+    }
+
+    function setDevice(mode, btn) {
+      document.querySelectorAll('#deviceToggle .proto-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (mode === 'mobile') {
+        document.body.classList.add('mobile-sim');
+      } else {
+        document.body.classList.remove('mobile-sim');
+      }
+    }
+
+    // Keyboard nav
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        e.preventDefault();
+        navigatePage(1);
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        navigatePage(-1);
+      } else if (e.key === 'Escape') {
+        closeSignModal();
+        closeContactDrawer();
+        closeMobileNav();
+      }
+    });
+
+    // Init
+    buildSidebar();
+    setupObserver();
+    updatePageCounter(0);
+    feather.replace();
+  </script>
+</body>
+</html>
