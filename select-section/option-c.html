@@ -162,7 +162,6 @@
       position: sticky;
       right: 0;
       z-index: 3;
-      width: 108px; min-width: 108px;
       background: #28373E;
       border-left: 1px solid rgba(255,255,255,0.1);
       padding: 0 8px;
@@ -236,17 +235,15 @@
     .item-row td.td-num { text-align: right; font-size: var(--Sizes-Smaller); color: var(--text-default); }
     .item-row:hover td { background: var(--components-table-background-hover); }
 
-    /* Sticky actions column — fixed width so section and item icons align */
+    /* Sticky actions column */
     .proposal-table thead th:last-child {
       position: sticky; right: 0; z-index: 3;
-      width: 108px; min-width: 108px;
       background: var(--background-tertiary);
       border-left: 1px solid var(--border-default);
       box-shadow: -6px 0 14px rgba(0,0,0,0.08);
     }
     .item-row td:last-child {
       position: sticky; right: 0; z-index: 2;
-      width: 108px; min-width: 108px;
       background: var(--background-default);
       border-left: 1px solid var(--border-default);
       box-shadow: -6px 0 14px rgba(0,0,0,0.08);
@@ -254,6 +251,8 @@
     .item-row:hover td:last-child { background: var(--components-table-background-hover); }
 
     .item-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+    /* Spacer matches the section's add button so × and eye land at the same pixel position */
+    .item-actions::before { content: ''; display: block; width: 28px; flex-shrink: 0; }
 
     .act-btn {
       width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
