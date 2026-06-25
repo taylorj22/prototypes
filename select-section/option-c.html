@@ -162,6 +162,7 @@
       position: sticky;
       right: 0;
       z-index: 3;
+      min-width: 108px;
       background: #28373E;
       border-left: 1px solid rgba(255,255,255,0.1);
       padding: 0 8px;
@@ -169,7 +170,7 @@
       white-space: nowrap;
       box-shadow: -6px 0 14px rgba(0,0,0,0.15);
     }
-    .section-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+    .section-actions { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 4px; }
     .act-btn-sec {
       width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
       background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.4);
@@ -238,21 +239,21 @@
     /* Sticky actions column */
     .proposal-table thead th:last-child {
       position: sticky; right: 0; z-index: 3;
+      min-width: 108px;
       background: var(--background-tertiary);
       border-left: 1px solid var(--border-default);
       box-shadow: -6px 0 14px rgba(0,0,0,0.08);
     }
     .item-row td:last-child {
       position: sticky; right: 0; z-index: 2;
+      min-width: 108px;
       background: var(--background-default);
       border-left: 1px solid var(--border-default);
       box-shadow: -6px 0 14px rgba(0,0,0,0.08);
     }
     .item-row:hover td:last-child { background: var(--components-table-background-hover); }
 
-    .item-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
-    /* Spacer matches the section's add button so × and eye land at the same pixel position */
-    .item-actions::before { content: ''; display: block; width: 28px; flex-shrink: 0; }
+    .item-actions { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 4px; }
 
     .act-btn {
       width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
