@@ -162,6 +162,7 @@
       position: sticky;
       right: 0;
       z-index: 3;
+      width: 108px; min-width: 108px;
       background: #28373E;
       border-left: 1px solid rgba(255,255,255,0.1);
       padding: 0 8px;
@@ -235,15 +236,17 @@
     .item-row td.td-num { text-align: right; font-size: var(--Sizes-Smaller); color: var(--text-default); }
     .item-row:hover td { background: var(--components-table-background-hover); }
 
-    /* Sticky actions column */
+    /* Sticky actions column — fixed width so section and item icons align */
     .proposal-table thead th:last-child {
       position: sticky; right: 0; z-index: 3;
+      width: 108px; min-width: 108px;
       background: var(--background-tertiary);
       border-left: 1px solid var(--border-default);
       box-shadow: -6px 0 14px rgba(0,0,0,0.08);
     }
     .item-row td:last-child {
       position: sticky; right: 0; z-index: 2;
+      width: 108px; min-width: 108px;
       background: var(--background-default);
       border-left: 1px solid var(--border-default);
       box-shadow: -6px 0 14px rgba(0,0,0,0.08);
