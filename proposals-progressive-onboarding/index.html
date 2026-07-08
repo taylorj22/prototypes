@@ -949,12 +949,12 @@
     .pill-opt.sel { background: #1373E3; border-color: #1373E3; color: #fff; }
     .pill-opt-emoji { font-size: 16px; line-height: 1; }
 
-    /* ── Summary step (Step 6) ── */
+    /* ── Summary step (Step 5) ── */
     .q-summary-head { text-align: center; padding: 20px 0 12px; }
     .q-summary-emoji { font-size: 36px; line-height: 1; margin-bottom: 8px; }
     .q-summary-title { font-size: 26px; font-weight: 500; color: #0B0F12; margin-bottom: 4px; }
     .q-summary-sub { font-size: 15px; color: #6B7980; }
-    .q-summary-rows { border: 1px solid #E1E4E6; border-radius: 8px; overflow: hidden; margin: 16px 0 4px; }
+    .q-summary-rows { border: 1px solid #E1E4E6; border-radius: 8px; overflow: hidden; margin: 16px 0 28px; }
     .q-summary-row {
       display: flex; align-items: flex-start; justify-content: space-between;
       padding: 11px 16px; background: #fff; font-size: 13px; gap: 16px;
@@ -1040,8 +1040,6 @@
       <div class="q-seg" id="qseg-3"></div>
       <div class="q-seg" id="qseg-4"></div>
       <div class="q-seg" id="qseg-5"></div>
-      <div class="q-seg" id="qseg-6"></div>
-      <div class="q-seg" id="qseg-7"></div>
     </div>
     <div class="q-body">
 
@@ -1069,7 +1067,7 @@
 
       <!-- Step 1: Job types — multi-select, 2×2 grid, checkbox LEFT -->
       <div class="q-step active" id="qs-1">
-        <div class="q-step-num">Step 1 of 6</div>
+        <div class="q-step-num">Step 1 of 5</div>
         <div class="q-question">What type of jobs do you mainly do?</div>
         <div class="q-subtitle">Select all that apply.</div>
         <div class="q-options">
@@ -1110,7 +1108,7 @@
 
       <!-- Step 2: Manufacturers — multi-select, pill/chip style -->
       <div class="q-step" id="qs-2">
-        <div class="q-step-num">Step 2 of 6</div>
+        <div class="q-step-num">Step 2 of 5</div>
         <div class="q-question">Which shingle manufacturers do you work with?</div>
         <div class="q-subtitle">Select all that apply. We'll include a branded template for each. Optional — skip if you'd rather set this up later.</div>
         <div class="q-options pills" id="mfr-pills">
@@ -1127,7 +1125,7 @@
 
       <!-- Step 3: Materials — multi-select, pill/chip style -->
       <div class="q-step" id="qs-3">
-        <div class="q-step-num">Step 3 of 6</div>
+        <div class="q-step-num">Step 3 of 5</div>
         <div class="q-question">What roofing materials do you work with?</div>
         <div class="q-subtitle">Select all that apply. We'll build a template for each material you work with.</div>
         <div class="q-options pills">
@@ -1139,13 +1137,13 @@
         </div>
       </div>
 
-      <!-- Step 4: Pricing method — multi-select, stacked, checkbox LEFT -->
+      <!-- Step 4: Pricing — consolidated, multi-select, stacked, checkbox LEFT -->
       <div class="q-step" id="qs-4">
-        <div class="q-step-num">Step 4 of 6</div>
-        <div class="q-question">How do you structure your pricing?</div>
+        <div class="q-step-num">Step 4 of 5</div>
+        <div class="q-question">How do you price your proposals?</div>
         <div class="q-subtitle">Select all that apply — most contractors use a mix.</div>
-        <div class="q-options">
-          <div class="q-option" onclick="tog(this)">
+        <div class="q-options single">
+          <div class="q-option" data-price="single" onclick="tog(this)">
             <div class="q-checkbox"></div>
             <span class="q-opt-emoji">1️⃣</span>
             <div class="q-opt-content">
@@ -1153,7 +1151,7 @@
               <div class="q-opt-desc">One price, clear and simple</div>
             </div>
           </div>
-          <div class="q-option" onclick="tog(this)">
+          <div class="q-option" data-price="gbb" onclick="tog(this)">
             <div class="q-checkbox"></div>
             <span class="q-opt-emoji">🥇</span>
             <div class="q-opt-content">
@@ -1161,32 +1159,7 @@
               <div class="q-opt-desc">Let clients choose their tier</div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Step 5: Pricing style — multi-select, stacked, checkbox LEFT -->
-      <div class="q-step" id="qs-5">
-        <div class="q-step-num">Step 5 of 6</div>
-        <div class="q-question">What's your preferred pricing style?</div>
-        <div class="q-subtitle">Select all that apply. Line item shows the breakdown to the customer; the others keep it hidden.</div>
-        <div class="q-options">
-          <div class="q-option" onclick="tog(this)">
-            <div class="q-checkbox"></div>
-            <span class="q-opt-emoji">💰</span>
-            <div class="q-opt-content">
-              <div class="q-opt-label">All-inclusive</div>
-              <div class="q-opt-desc">One total, no breakdown shown</div>
-            </div>
-          </div>
-          <div class="q-option" onclick="tog(this)">
-            <div class="q-checkbox"></div>
-            <span class="q-opt-emoji">📐</span>
-            <div class="q-opt-content">
-              <div class="q-opt-label">Per square</div>
-              <div class="q-opt-desc">Priced by roof area</div>
-            </div>
-          </div>
-          <div class="q-option" onclick="tog(this)">
+          <div class="q-option" data-price="lineitem" onclick="tog(this)">
             <div class="q-checkbox"></div>
             <span class="q-opt-emoji">📊</span>
             <div class="q-opt-content">
@@ -1194,12 +1167,28 @@
               <div class="q-opt-desc">Itemized materials and labor shown to customer</div>
             </div>
           </div>
+          <div class="q-option" data-price="per_square" onclick="tog(this)">
+            <div class="q-checkbox"></div>
+            <span class="q-opt-emoji">📐</span>
+            <div class="q-opt-content">
+              <div class="q-opt-label">Per square</div>
+              <div class="q-opt-desc">Priced by roof area</div>
+            </div>
+          </div>
+          <div class="q-option" data-price="inclusive" onclick="tog(this)">
+            <div class="q-checkbox"></div>
+            <span class="q-opt-emoji">💰</span>
+            <div class="q-opt-content">
+              <div class="q-opt-label">All-inclusive</div>
+              <div class="q-opt-desc">One total, no breakdown shown</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Step 6: Other work — multi-select, stacked, checkbox LEFT -->
-      <div class="q-step" id="qs-6">
-        <div class="q-step-num">Step 6 of 6</div>
+      <!-- Step 5: Other work — multi-select, stacked, checkbox LEFT -->
+      <div class="q-step" id="qs-5">
+        <div class="q-step-num">Step 5 of 5</div>
         <div class="q-question">Which other work do you do?</div>
         <div class="q-subtitle">Select all that apply — we'll add a template for each so you're ready to quote.</div>
         <div class="q-options">
@@ -1238,8 +1227,8 @@
         </div>
       </div>
 
-      <!-- Step 7: Summary -->
-      <div class="q-step" id="qs-7">
+      <!-- Step 6: Summary -->
+      <div class="q-step" id="qs-6">
         <div class="q-summary-head">
           <div class="q-summary-emoji">🎉</div>
           <div class="q-summary-title">All set!</div>
@@ -1249,8 +1238,7 @@
           <div class="q-summary-row"><span class="q-sum-label">Job types</span><span class="q-sum-val" id="sum-jobtypes">—</span></div>
           <div class="q-summary-row"><span class="q-sum-label">Manufacturers</span><span class="q-sum-val" id="sum-mfrs">—</span></div>
           <div class="q-summary-row"><span class="q-sum-label">Materials</span><span class="q-sum-val" id="sum-materials">—</span></div>
-          <div class="q-summary-row"><span class="q-sum-label">Pricing method</span><span class="q-sum-val" id="sum-method">—</span></div>
-          <div class="q-summary-row"><span class="q-sum-label">Pricing style</span><span class="q-sum-val" id="sum-style">—</span></div>
+          <div class="q-summary-row"><span class="q-sum-label">Pricing</span><span class="q-sum-val" id="sum-pricing">—</span></div>
           <div class="q-summary-row"><span class="q-sum-label">Other work</span><span class="q-sum-val" id="sum-otherwork">—</span></div>
         </div>
       </div>
@@ -1292,7 +1280,7 @@
       <div class="cover-card" onclick="show('questionnaire')">
         <div class="cover-card-num">02</div>
         <div class="cover-card-title">Questionnaire (mid-flow)</div>
-        <div class="cover-card-desc">5-step modal collecting job types, materials, pricing method, pricing style, and line item visibility</div>
+        <div class="cover-card-desc">5-question modal collecting job types, manufacturers, materials, pricing, and other work</div>
         <div class="cover-card-arrow">View screen →</div>
       </div>
       <div class="cover-card" onclick="show('template-selection')">
@@ -1979,11 +1967,11 @@
   // Questionnaire
   let qS = 0;
   const ACCOUNT_LOCATION = 'CA'; // hardcoded for prototype — Western US, QXO eligible
-  const TOTAL_STEPS = 7;          // 6 question steps + summary
-  const SUMMARY_STEP = 7;
-  const REVIEW_TRIGGER_STEP = 6;  // last question (line items)
+  const TOTAL_STEPS = 5;          // 5 question steps (progress bar segments)
+  const SUMMARY_STEP = 6;
+  const REVIEW_TRIGGER_STEP = 5;  // last question (other work)
   const PILL_STEPS = [2, 3];      // manufacturers + materials use pill-style multi-select
-  const OPTIONAL_STEPS = [2, 6];  // manufacturers + other work can be skipped
+  const OPTIONAL_STEPS = [2, 5];  // manufacturers + other work can be skipped
 
   function openQ() { qS = 0; syncQ(); document.getElementById('q-overlay').classList.add('open'); }
   function closeQ() { document.getElementById('q-overlay').classList.remove('open'); }
@@ -2029,20 +2017,20 @@
         .map((el, i) => el.classList.contains('sel') ? opts[i] : null)
         .filter(v => v !== null);
     const jobOpts        = ['residential','commercial','retail','insurance'];
-    const methodOpts     = ['single','gbb'];
-    const styleOpts      = ['inclusive','per_square','lineitem'];
     const otherWorkOpts  = ['gutters','siding','silicone','cleaning'];
-    const pricingStyle   = cardMultiSel('qs-5', styleOpts);
+    // Combined pricing step — uses data-price attributes
+    const allPricing   = [...document.querySelectorAll('#qs-4 .q-option.sel')].map(el => el.dataset.price).filter(Boolean);
+    const pricingMethod = allPricing.filter(p => p === 'single' || p === 'gbb');
+    const pricingStyle  = allPricing.filter(p => p === 'inclusive' || p === 'per_square' || p === 'lineitem');
     return {
       jobTypes:         cardMultiSel('qs-1', jobOpts),
       manufacturers:    pillSel('qs-2', 'mfr'),
       materials:        pillSel('qs-3', 'mat'),
-      pricingMethod:    cardMultiSel('qs-4', methodOpts),
+      pricingMethod,
       pricingStyle,
-      // Derived: line items shown only if user picked "line item" style;
-      // all-inclusive and per-square both hide them.
+      // Derived: line items shown only if user picked "line item" style
       lineItemsVisible: pricingStyle.includes('lineitem') ? 'shown' : 'hidden',
-      otherWork:        cardMultiSel('qs-6', otherWorkOpts),
+      otherWork:        cardMultiSel('qs-5', otherWorkOpts),
     };
   }
   function populateSummary() {
@@ -2051,9 +2039,8 @@
     document.getElementById('sum-jobtypes').textContent   = labels('qs-1', '.q-option.sel .q-opt-label');
     document.getElementById('sum-mfrs').textContent       = [...document.querySelectorAll('#qs-2 .pill-opt.sel')].length ? pills('qs-2') : 'Skipped';
     document.getElementById('sum-materials').textContent  = pills('qs-3');
-    document.getElementById('sum-method').textContent     = labels('qs-4', '.q-option.sel .q-opt-label');
-    document.getElementById('sum-style').textContent      = labels('qs-5', '.q-option.sel .q-opt-label');
-    document.getElementById('sum-otherwork').textContent  = [...document.querySelectorAll('#qs-6 .q-option.sel')].length ? labels('qs-6', '.q-option.sel .q-opt-label') : 'None';
+    document.getElementById('sum-pricing').textContent    = labels('qs-4', '.q-option.sel .q-opt-label');
+    document.getElementById('sum-otherwork').textContent  = [...document.querySelectorAll('#qs-5 .q-option.sel')].length ? labels('qs-5', '.q-option.sel .q-opt-label') : 'None';
 
     // Compute seeded templates and stash for downstream use
     const answers = collectAnswers();
