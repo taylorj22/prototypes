@@ -2050,7 +2050,7 @@
   }
   function qNext() {
     if (document.getElementById('qcontinue').classList.contains('disabled')) return;
-    if (qS === SUMMARY_STEP) { closeQ(); show('template-selection'); }
+    if (qS === SUMMARY_STEP) { closeQ(); window.__selectedTemplates = window.__seededTemplates; startSeeding(); }
     else { qS++; if (qS === SUMMARY_STEP) populateSummary(); syncQ(); }
   }
   function qBack() { if (qS > 0) { qS--; syncQ(); } }
